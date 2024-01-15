@@ -131,14 +131,6 @@ function moveRight(player) {
     player.x += 10;
 }
 
-function jump(player) {
-    player.y -= 50;
-}
-
-function fall(player) {
-    player.y += 50;
-}
-
 function drawGame(player) {
     ctx.fillStyle = "#ffffff"; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -170,7 +162,8 @@ function main() {
 }
     
 drawMenu(); // idk where its supposed 2 b tbh
-
+let isJumping = false;
+let spaceHoldStatus = false;
 document.addEventListener("keydown", (e) => {
     let a = 1;
     if (e.key == "a"){
@@ -179,15 +172,51 @@ document.addEventListener("keydown", (e) => {
     if (e.key == "d"){
         moveRight(player);
     }
-    if (e.key == " "){
-        jump(player);
-        // drawGame(player);
-        // fall(player);
-        // drawGame(player);
-        // a = 0;
-    }
     console.log(e);
-    if (a === 1) {
-        drawGame(player);
-    };
+    drawGame(player);
+    
+// copied from internet (altered)
+    
+    if(e.key===" "){
+        if(isJumping===false && spaceHoldStatus===false){
+            spaceHoldStatus = true;
+            isJumping = true;
+            function jump(jumpDuration, jumpHeight, multiplier){
+                if(multiplier>5){
+                    return;
+                }
+                TweenMax.to(player, jumpDuration*multiplier, {
+                    y:jumpHeight*multiplier,
+                    ease:Power3.easeOut,
+                    onComplete:function(){
+                        // end jump
+                        TweenMax.to(player, (jumpDuration*multiplier)*.8, {
+                            y:0, 
+                            ease:Power1.easeIn,
+                            onComplete:function(){
+                                isJumping = false;
+                            }
+                        });            
+                    }
+                });
+                // continue adjusting height of jump if spacebar is held
+                TweenMax.delayedCall(.06, function(){
+                    if(spaceHoldStatus===true){    
+                        multiplier += 1;
+                        if(multiplier<=5){
+                            jump(jumpDuration, jumpHeight, multiplier);
+                        };
+                    }            
+                });   
+            }      
+            jump(.05, -30, 1);
+        }
+    }
 })
+document.addEventListener('keyup', (e) => {
+    if (e.key === " "){
+        spaceHoldStatus = false;
+    };
+});
+
+// copied from internet (altered)
