@@ -162,6 +162,7 @@ function main() {
 }
     
 drawMenu(); // idk where its supposed 2 b tbh
+
 let isJumping = false;
 let spaceHoldStatus = false;
 document.addEventListener("keydown", (e) => {
@@ -185,12 +186,12 @@ document.addEventListener("keydown", (e) => {
                 if(multiplier>5){
                     return;
                 }
-                TweenMax.to(player, jumpDuration*multiplier, {
+                TweenMax.to(player.y, jumpDuration*multiplier, {
                     y:jumpHeight*multiplier,
                     ease:Power3.easeOut,
                     onComplete:function(){
                         // end jump
-                        TweenMax.to(player, (jumpDuration*multiplier)*.8, {
+                        TweenMax.to(player.y, (jumpDuration*multiplier)*.8, { // tweenmax??
                             y:0, 
                             ease:Power1.easeIn,
                             onComplete:function(){
