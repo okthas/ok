@@ -1,25 +1,28 @@
 body {
-    margin: 0;
-    overflow: hidden;
+  margin: 0;
+  overflow: hidden;
 }
 
 canvas {
-    display: block;
+  display: block;
 }
 
 #gameCanvas {
-    border: 1px solid black;
-    background-color: #f0f0f0;
-    transform: translate(30%, 30%);
+  border: 1px solid black;
+  background-color: #f0f0f0;
+  transform: translate(
+    20%,
+    10%
+  ); /* change depending on screen the game is displayed on; idk how to make it universal yet */
 }
 
 button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 10px;
-    cursor: pointer;
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
 }

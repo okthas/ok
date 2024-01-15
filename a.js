@@ -14,9 +14,9 @@ function drawMenu() {
 
     ctx.font = "30px Arial";
     ctx.fillStyle = "#333";
-    ctx.fillText("Welcome to the Game", canvas.width / 4 + 30, canvas.height / 4 + 50);
+    ctx.fillText("terraria but bad", canvas.width / 4 + 30, canvas.height / 4 + 50);
 
-    drawButton(canvas.width / 4 + 50, canvas.height / 2, "Start Game", startGame, !gameStarted);
+    drawButton(canvas.width / 4 + 50, canvas.height / 2, "start", startGame, !gameStarted);
 }
 
 function drawButton(x, y, text, onClick, enabled) {
@@ -109,6 +109,8 @@ function leveling(player) {
 function main() {
     ctx.fillStyle = "#ffffff"; // replaced for the actual game later on
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(400,500,50,50)
     let player = {
         name: "_",
         hp: 10,
