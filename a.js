@@ -5,6 +5,21 @@ const ctx = canvas.getContext("2d");
 
 let gameStarted = false; // Variable to track whether the game has started
 
+let player = {
+    name: "_",
+    hp: 10,
+    mhp: 10,
+    str: 1,
+    inv: [],
+    lvl: 1,
+    xp: 0,
+    mxp: undefined,
+    stamina: 10,
+    skillpoint: 0,
+    x: 500,
+    y: 550
+};    
+
 function drawMenu() {
     ctx.fillStyle = "#f0f0f0";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -106,27 +121,43 @@ function leveling(player) {
     };
 }
 
+//movement
+
+function moveLeft(player) {
+    player.x -= 10;
+}
+
+function moveRight(player) {
+    player.x += 10;
+}
+
+function jump(player) {
+    player.y -= 50;
+}
+
+function fall(player) {
+    player.y += 50;
+}
+
+function drawGame(player) {
+    ctx.fillStyle = "#ffffff"; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(player.x,player.y,50,50)  
+}
+
+// movement
+
 function main() {
     ctx.fillStyle = "#ffffff"; // replaced for the actual game later on
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(400,500,50,50)
-    let player = {
-        name: "_",
-        hp: 10,
-        mhp: 10,
-        str: 1,
-        inv: [],
-        lvl: 1,
-        xp: 0,
-        mxp: undefined,
-        stamina: 10,
-        skillpoint: 0
-    };    
+    
     player.mxp = 9+player.lvl**2;
-    console.log("tst");
+
+    console.log("tst"); // this 2
     player.hp = 0; // remove later
-    while (player.hp > 0) {
+    while (player.hp > 0) { 
+        drawGame(player);
         
         if (player.xp >= player.mxp) {
             leveling(player);
@@ -139,3 +170,24 @@ function main() {
 }
     
 drawMenu(); // idk where its supposed 2 b tbh
+
+document.addEventListener("keydown", (e) => {
+    let a = 1;
+    if (e.key == "a"){
+        moveLeft(player);
+    }
+    if (e.key == "d"){
+        moveRight(player);
+    }
+    if (e.key == " "){
+        jump(player);
+        // drawGame(player);
+        // fall(player);
+        // drawGame(player);
+        // a = 0;
+    }
+    console.log(e);
+    if (a === 1) {
+        drawGame(player);
+    };
+})
