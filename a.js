@@ -1,5 +1,4 @@
 // chat gpt menu: start
-let veryRandomGlobalVariableThatServesLittleToNoValue = 0;
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -125,28 +124,28 @@ function leveling(player) {
 
 var velY = 0,
     velX = 0,
-    speed = 2, // max speed
+    speed = 3, // max speed
     friction = 0.9, // friction
     velJ = 10;
-    if (veryRandomGlobalVariableThatServesLittleToNoValue == 0) {
-        direction = "Left";
-    }
-    veryRandomGlobalVariableThatServesLittleToNoValue = 1;
+    direction = "Right";
     
     function update() {
         ctx.clearRect(0, 0, 1080, 1080);
         // console.log("hej");
         requestAnimationFrame(update);
         if (keys["ControlLeft"]) {
-            if (direction = "Right") {
-                if (velX == 0); {
-                    velX = 10;
-                }
-            } else if (direction = "Left") {
-                if (velX == 0); {
-                    velX = -10;
-                };
+            // if ( you have the teleport ability ) {
+            //     if (direction == "Right" && velX <= 3 && velX >= 0) {
+            //         player.X += 30;
+            //     } else if (direction == "Left" && velX >= -3 && velX <= 0) {
+            //         player.X -= 30;
+            //     } else {
+            if (direction == "Right" && velX <= 3 && velX >= 0) {
+                velX = 20;
+            } else if (direction == "Left" && velX >= -3 && velX <= 0) {
+                velX = -20;
             }
+            // }
         }
         if (player.y == 550) {
             velJ =10;
@@ -166,6 +165,7 @@ var velY = 0,
                 velJ--;
                 velY = velJ;
             }
+            console.log(player.y)
         }
         if (keys["KeyD"]) {
             if (velX < speed) {
@@ -201,7 +201,7 @@ var velY = 0,
 
         // do the drawing
         // ctx.beginPath();
-        ctx.fillStyle = "green";
+        ctx.fillStyle = "#000000";
         // console.log(keys["Space"]);
         ctx.fillRect(player.x, player.y, 50, 50);
         console.log(direction);
@@ -227,19 +227,19 @@ function main() {
     player.mxp = 9+player.lvl**2;
 
     console.log("tst"); // this 2
-    player.hp = 0; // remove later
+    // player.hp = 0; // remove later
     
     update();
-    while (player.hp > 0) { 
-        drawGame(player);
-        
-        if (player.xp >= player.mxp) {
-            leveling(player);
-            player.mxp = 9+player.lvl**2;
-        };
-        if (false) { // chest function
-            chest(player)
-        };
+    if (player.xp >= player.mxp) {
+        leveling(player);
+        player.mxp = 9+player.lvl**2;
     };
+    if (false) { // chest function
+        chest(player)
+    };
+    console.log(player.hp)
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "red";
+    ctx.fillText("Game Over!", canvas.width / 4 + 30, canvas.height / 4 + 50);
 }
 drawMenu(); // idk where its supposed 2 b tbh
