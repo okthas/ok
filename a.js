@@ -1,5 +1,5 @@
 // chat gpt menu: start
-
+let veryRandomGlobalVariableThatServesLittleToNoValue = 0;
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -123,37 +123,113 @@ function leveling(player) {
 
 //movement
 
-function moveLeft(player) {
-    if (player.x <= 0){
-        return null;
-    };
-    player.x -= 10;
-}
+var velY = 0,
+    velX = 0,
+    speed = 2, // max speed
+    friction = 0.9, // friction
+    velJ = 10;
+    if (veryRandomGlobalVariableThatServesLittleToNoValue == 0) {
+        direction = "Left";
+    }
+    veryRandomGlobalVariableThatServesLittleToNoValue = 1;
+    
+    function update() {
+        ctx.clearRect(0, 0, 1080, 1080);
+        // console.log("hej");
+        requestAnimationFrame(update);
+        if (keys["ControlLeft"]) {
+            if (direction = "Right") {
+                if (velX == 0); {
+                    velX = 10;
+                }
+            } else if (direction = "Left") {
+                if (velX == 0); {
+                    velX = -10;
+                };
+            }
+        }
+        if (player.y == 550) {
+            velJ =10;
+        }
+        // check the keys and do the movement.
+        if (player.y < 550 && keys["Space"] == false) {
+            velJ--;
+            velY = velJ;
+        }
+        if (keys["Space"]) {
+            if (player.y > 300) {
+                if (velJ < 0) {
+                    velJ -= 0.2;
+                } else {velJ -= 0.3;}
+                velY = velJ;
+            } else {
+                velJ--;
+                velY = velJ;
+            }
+        }
+        if (keys["KeyD"]) {
+            if (velX < speed) {
+                velX++;
+                direction = "Right";
+            }
+        }
+        if (keys["KeyA"]) {
+            if (velX > -speed) {
+                velX--;
+                direction = "Left";
+            }
+        }
 
-function moveRight(player) {
-    if (player.x >= 1030) {
-        return null;
-    };
-    player.x += 10;
-}
+        // apply some friction to y velocity.
+        velY *= friction;
+        player.y -= velY;
 
-function drawGame(player) {
-    ctx.fillStyle = "#ffffff"; 
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(player.x,player.y,50,50)  
+        // apply some friction to x velocity.
+        velX *= friction;
+        player.x += velX;
+
+        // bounds checking
+        if (player.x >= 1030) {
+            player.x = 1030;
+        } else if (player.x <= 0) {
+            player.x = 0;
+        }
+
+        if (player.y >= 550) {
+            player.y = 550;
+        }
+
+        // do the drawing
+        // ctx.beginPath();
+        ctx.fillStyle = "green";
+        // console.log(keys["Space"]);
+        ctx.fillRect(player.x, player.y, 50, 50);
+        console.log(direction);
+    }
+keys = {
+    "KeyA": false,
+    "KeyD": false,
+    "Space": false,
+    "ControlLeft": false,
 }
+// key events
+document.body.addEventListener("keydown", function (e) {
+    console.log(e);
+    keys[e.code] = true;
+});
+document.body.addEventListener("keyup", function (e) {
+    keys[e.code] = false;
+});
 
 // movement
 
 function main() {
-    ctx.fillStyle = "#ffffff"; // replaced for the actual game later on
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
     player.mxp = 9+player.lvl**2;
 
     console.log("tst"); // this 2
     player.hp = 0; // remove later
+    
+    update();
     while (player.hp > 0) { 
         drawGame(player);
         
@@ -166,80 +242,4 @@ function main() {
         };
     };
 }
-
-// function jump(){
-//     player.y += 20;
-//     var seconds = 0;
-
-//     function incrementSeconds() {
-//         seconds += 1;
-//     }
-
-//     var cancel = setInterval(incrementSeconds, 1000);
-//     if (seconds == 10) {
-//         player.y -= 20;
-//     };
-// }
-
 drawMenu(); // idk where its supposed 2 b tbh
-
-let isJumping = false;
-let spaceHoldStatus = false;
-document.addEventListener("keydown", (e) => {
-    let a = 1;
-    if (e.key == "a"){
-        moveLeft(player);
-    };
-    if (e.key == "d"){
-        moveRight(player);
-    };
-    // if (e.key == " "){
-    //     jump();
-    // };
-    console.log(e);
-    drawGame(player);
-// copied from internet (altered)
-    
-    if(e.key===" "){
-        if(isJumping===false && spaceHoldStatus===false){
-            spaceHoldStatus = true;
-            isJumping = true;
-            function jump(jumpDuration, jumpHeight, multiplier){
-                if(multiplier>5){
-                    return;
-                }
-                TweenMax.to(player.y, jumpDuration*multiplier, {
-                    y:jumpHeight*multiplier,
-                    ease:Power3.easeOut,
-                    onComplete:function(){
-                        // end jump
-                        TweenMax.to(player.y, (jumpDuration*multiplier)*.8, { // tweenmax??
-                            y:0, 
-                            ease:Power1.easeIn,
-                            onComplete:function(){
-                                isJumping = false;
-                            }
-                        });            
-                    }
-                });
-                // continue adjusting height of jump if spacebar is held
-                TweenMax.delayedCall(.06, function(){
-                    if(spaceHoldStatus===true){    
-                        multiplier += 1;
-                        if(multiplier<=5){
-                            jump(jumpDuration, jumpHeight, multiplier);
-                        };
-                    }            
-                });   
-            }      
-            jump(.05, -30, 1);
-        }
-    }
-})
-document.addEventListener('keyup', (e) => {
-    if (e.key === " "){
-        spaceHoldStatus = false;
-    };
-});
-
-// copied from internet (altered)
