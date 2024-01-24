@@ -124,10 +124,16 @@ function leveling(player) {
 //movement
 
 function moveLeft(player) {
+    if (player.x <= 0){
+        return null;
+    };
     player.x -= 10;
 }
 
 function moveRight(player) {
+    if (player.x >= 1030) {
+        return null;
+    };
     player.x += 10;
 }
 
@@ -160,7 +166,21 @@ function main() {
         };
     };
 }
-    
+
+// function jump(){
+//     player.y += 20;
+//     var seconds = 0;
+
+//     function incrementSeconds() {
+//         seconds += 1;
+//     }
+
+//     var cancel = setInterval(incrementSeconds, 1000);
+//     if (seconds == 10) {
+//         player.y -= 20;
+//     };
+// }
+
 drawMenu(); // idk where its supposed 2 b tbh
 
 let isJumping = false;
@@ -169,13 +189,15 @@ document.addEventListener("keydown", (e) => {
     let a = 1;
     if (e.key == "a"){
         moveLeft(player);
-    }
+    };
     if (e.key == "d"){
         moveRight(player);
-    }
+    };
+    // if (e.key == " "){
+    //     jump();
+    // };
     console.log(e);
     drawGame(player);
-    
 // copied from internet (altered)
     
     if(e.key===" "){
