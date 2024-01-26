@@ -60,7 +60,8 @@ function startGame() {
     drawMenu(); // Redraw the menu to disable the button
 
     // Call your main() function here, or include its logic directly
-    main();
+    player.mxp = 9+player.lvl**2;
+    update();
 
     // You can add additional logic here for starting the game.
 }
@@ -138,17 +139,66 @@ var velY = 0,
         if (false) { // chest function
             chest(player)
         };
-        console.log(player.hp)
+        // console.log(player.hp)
         if (player.hp <= 0) {
-            ctx.fillStyle = "#000";
-            ctx.fillRect(canvas.width/4+25,canvas.height/4,300,70)
-            ctx.font = "30px Arial";
-            ctx.fillStyle = "red";
-            ctx.fillText("Game Over!", canvas.width / 4 + 30, canvas.height / 4 + 50);
+            ctx.fillStyle = "#222";
+            ctx.fillRect(0,0,canvas.width,canvas.height)
+            ctx.font = "70px Arial";
+            ctx.fillStyle = "#d11";
+            ctx.fillText("Game Over!", canvas.width / 4, canvas.height / 2 - 50);
+            return null;
         }
         requestAnimationFrame(update);
-        if (keys["Escape"]) {
+        if (keys["Escape"]) { // idk how ths works
             pause();
+        }
+        if(keys["1"]){
+            keys.Space = false;
+            keys.KeyA = false;
+            keys.KeyD = false;
+            keys.ControlLeft = false;
+            if (attackCharge < 70) {
+                attackCharge++;
+            }
+            if (attackCharge >= 15 && attackCharge < 35) {
+                ctx.fillStyle = "#fc0";
+                ctx.fillRect(player.x-10,player.y-15,attackCharge,5);
+            } else if (attackCharge >= 35 && attackCharge < 70) {
+                ctx.fillStyle = "#f80";
+                ctx.fillRect(player.x-10,player.y-15,attackCharge,5);
+            } else if (attackCharge == 70) {
+                ctx.fillStyle = "#f00";
+                ctx.fillRect(player.x-10,player.y-15,attackCharge,5);
+            } else {
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(player.x-10,player.y-15,attackCharge,5);
+            }
+            console.log(attackCharge);
+        }
+        if (keys["1"] == false) {
+            if (attackCharge > 15 && attackCharge < 35) {
+                if (direction == "Right") {
+                    velX = 5;
+                }
+                if (direction == "Left") {
+                    velX = -5;
+                }
+            } else if (attackCharge >= 35 && attackCharge < 70) {
+                if (direction == "Right") {
+                    velX = 10;
+                }
+                if (direction == "Left") {
+                    velX = -10;
+                }
+            } else if (attackCharge == 70) {
+                if (direction == "Right") {
+                    velX = 20;
+                }
+                if (direction == "Left") {
+                    velX = -20;
+                }
+            }
+            attackCharge = 0;
         }
         if (keys["ControlLeft"]) {
             // if ( you have the teleport ability ) {
@@ -234,6 +284,7 @@ var velY = 0,
 
         if (player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
             velX = -1;
+            // player.hp--;
             // player.x = platform.x-50;
         } 
         if (player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
@@ -250,7 +301,8 @@ var velY = 0,
 
         // platforms
 
-        console.log(direction);
+        // console.log(direction);
+        console.log(keys["1"])
     }
 keys = {
     "KeyA": false,
@@ -258,6 +310,7 @@ keys = {
     "Space": false,
     "ControlLeft": false,
     "Escape": false,
+    "1": false,
 }
 // key events
 document.body.addEventListener("keydown", function (e) {
@@ -270,18 +323,23 @@ document.body.addEventListener("keyup", function (e) {
 
 // movement
 
+// fighting
+
+let attackCharge = 0;
+document.body.addEventListener("mousedown", function (e) {
+    keys["1"] = true;
+});
+document.body.addEventListener("mouseup", function (e) {
+    keys["1"] = false;
+    
+});
+
+// fighting
+
 function pause() {
+    ctx.clearRect(0,0,canvas.width,canvas.height)
     ctx.fillStyle = "#000"; // idk how dis works tbhh
     ctx.fillRect(0,0,1080,1080);
 }
 
-function main() {
-    player.mxp = 9+player.lvl**2;
-
-    console.log("tst"); // this 2
-    // player.hp = 0; // remove later
-    
-    update();
-    
-}
 drawMenu(); // idk where its supposed 2 b tbh
