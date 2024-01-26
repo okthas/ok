@@ -108,7 +108,7 @@ function select() { // will spawn enemies depending on the coordinates when i ha
 }
 
 function leveling(player) {
-    while (player.xp > player.mxp) {
+    while (player.xp >= player.mxp) {
         if (player.lvl = 50) {
             break;
         };
@@ -131,8 +131,25 @@ var velY = 0,
     
     function update() {
         ctx.clearRect(0, 0, 1080, 1080);
-        // console.log("hej");
+        if (player.xp >= player.mxp) {
+            leveling(player);
+            player.mxp = 9+player.lvl**2;
+        };
+        if (false) { // chest function
+            chest(player)
+        };
+        console.log(player.hp)
+        if (player.hp <= 0) {
+            ctx.fillStyle = "#000";
+            ctx.fillRect(canvas.width/4+25,canvas.height/4,300,70)
+            ctx.font = "30px Arial";
+            ctx.fillStyle = "red";
+            ctx.fillText("Game Over!", canvas.width / 4 + 30, canvas.height / 4 + 50);
+        }
         requestAnimationFrame(update);
+        if (keys["Escape"]) {
+            pause();
+        }
         if (keys["ControlLeft"]) {
             // if ( you have the teleport ability ) {
             //     if (direction == "Right" && velX <= 3 && velX >= 0) {
@@ -193,9 +210,7 @@ var velY = 0,
             player.x = 1030;
         } else if (player.x <= 0) {
             player.x = 0;
-        }
-
-        if (player.y >= 550) {
+        } else if (player.y >= 550) {
             player.y = 550;
         }
 
@@ -204,6 +219,37 @@ var velY = 0,
         ctx.fillStyle = "#000000";
         // console.log(keys["Space"]);
         ctx.fillRect(player.x, player.y, 50, 50);
+        
+        // platforms
+        
+        platform = {
+            x: 600,
+            y: 500,
+            width: 100,
+            height: 100,
+        };
+
+        ctx.fillStyle = "#404040";
+        ctx.fillRect(platform.x,platform.y,platform.width,platform.height);
+
+        if (player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+            velX = -1;
+            // player.x = platform.x-50;
+        } 
+        if (player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+            velX = 1;
+            // player.x = platform.x+platform.width;
+        } 
+        if (player.y > platform.y-50 && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y < platform.y+platform.height) { // create actual hitboxes later
+            velJ = 1;
+            // player.y = platform.y-50;
+        } 
+        // if (player.y < platform.y && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y > platform.y+platform.height+5) { // create actual hitboxes later
+        //     velJ = -5;
+        // } 
+
+        // platforms
+
         console.log(direction);
     }
 keys = {
@@ -211,6 +257,7 @@ keys = {
     "KeyD": false,
     "Space": false,
     "ControlLeft": false,
+    "Escape": false,
 }
 // key events
 document.body.addEventListener("keydown", function (e) {
@@ -223,6 +270,11 @@ document.body.addEventListener("keyup", function (e) {
 
 // movement
 
+function pause() {
+    ctx.fillStyle = "#000"; // idk how dis works tbhh
+    ctx.fillRect(0,0,1080,1080);
+}
+
 function main() {
     player.mxp = 9+player.lvl**2;
 
@@ -230,16 +282,6 @@ function main() {
     // player.hp = 0; // remove later
     
     update();
-    if (player.xp >= player.mxp) {
-        leveling(player);
-        player.mxp = 9+player.lvl**2;
-    };
-    if (false) { // chest function
-        chest(player)
-    };
-    console.log(player.hp)
-    ctx.font = "30px Arial";
-    ctx.fillStyle = "red";
-    ctx.fillText("Game Over!", canvas.width / 4 + 30, canvas.height / 4 + 50);
+    
 }
 drawMenu(); // idk where its supposed 2 b tbh
