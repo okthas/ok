@@ -16,7 +16,9 @@ let player = {
     stamina: 10,
     skillpoint: 0,
     x: 500,
-    y: 550
+    y: 550,
+    stamina: 100,
+    mstamina: 100,
 };    
 
 function drawMenu() {
@@ -126,12 +128,28 @@ function leveling(player) {
 var velY = 0,
     velX = 0,
     speed = 3, // max speed
-    friction = 0.9, // friction
+    friction = 0.93, // friction
     velJ = 10;
     direction = "Right";
     
     function update() {
         ctx.clearRect(0, 0, 1080, 1080);
+        
+        // player stamina bar
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(20,60,player.mstamina,10);
+        ctx.fillStyle = "#00f";
+        ctx.fillRect(20,60,player.stamina,10);
+        
+        // player hp bar
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(20,20,player.mhp*20,10);
+        ctx.fillStyle = "#f00";
+        ctx.fillRect(20,20,player.hp*20,10);
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "#000";
+        ctx.fillText(`${player.hp}/${player.mhp}`, 220, 30);
+
         if (player.xp >= player.mxp) {
             leveling(player);
             player.mxp = 9+player.lvl**2;
@@ -177,28 +195,40 @@ var velY = 0,
         }
         if (keys["1"] == false) {
             if (attackCharge > 15 && attackCharge < 35) {
-                if (direction == "Right") {
-                    velX = 5;
-                }
-                if (direction == "Left") {
-                    velX = -5;
-                }
+                if (player.stamina > 10) {
+                    if (direction == "Right") {
+                        player.stamina-=10;
+                        velX = 5;
+                    }
+                    if (direction == "Left") {
+                        player.stamina-=10;
+                        velX = -5;
+                }}
             } else if (attackCharge >= 35 && attackCharge < 70) {
-                if (direction == "Right") {
-                    velX = 10;
-                }
-                if (direction == "Left") {
-                    velX = -10;
-                }
+                if (player.stamina > 20) {
+                    if (direction == "Right") {
+                        player.stamina-=20;
+                        velX = 10;
+                    }
+                    if (direction == "Left") {
+                        player.stamina-=20;
+                        velX = -10;
+                }}
             } else if (attackCharge == 70) {
-                if (direction == "Right") {
-                    velX = 20;
-                }
-                if (direction == "Left") {
-                    velX = -20;
-                }
+                if (player.stamina > 50) {
+                    if (direction == "Right") {
+                        player.stamina-=50;
+                        velX = 20;
+                    }
+                    if (direction == "Left") {
+                        player.stamina-=50;
+                        velX = -20;
+                }}
             }
             attackCharge = 0;
+        }
+        if (player.stamina < player.mstamina) {
+            player.stamina += player.mstamina*0.0025;
         }
         if (keys["ControlLeft"]) {
             // if ( you have the teleport ability ) {
@@ -207,11 +237,19 @@ var velY = 0,
             //     } else if (direction == "Left" && velX >= -3 && velX <= 0) {
             //         player.X -= 30;
             //     } else {
-            if (direction == "Right" && velX <= 3 && velX >= 0) {
-                velX = 20;
-            } else if (direction == "Left" && velX >= -3 && velX <= 0) {
-                velX = -20;
-            }
+            if (player.stamina > 20) {
+                if (direction == "Right" && velX <= 3 && velX >= 0) {
+                    velX = 20;
+                } else if (direction == "Left" && velX >= -3 && velX <= 0) {
+                    velX = -20;
+                }
+                if (velX == 20) {
+                    player.stamina -= 20;
+                    // player.hp--;
+                } else if (velX == -20) {
+                    player.stamina -= 20;
+                    // player.hp--;
+            }}
             // }
         }
         if (player.y == 550) {
@@ -280,24 +318,101 @@ var velY = 0,
         };
 
         ctx.fillStyle = "#404040";
-        ctx.fillRect(platform.x,platform.y,platform.width,platform.height);
+        // ctx.fillRect(platform.x,platform.y,platform.width,platform.height);
 
-        if (player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
-            velX = -1;
+        // if (player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+            // velX = -1;
             // player.hp--;
             // player.x = platform.x-50;
-        } 
-        if (player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
-            velX = 1;
+        // } 
+        // if (player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+            // velX = 1;
             // player.x = platform.x+platform.width;
-        } 
-        if (player.y > platform.y-50 && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y < platform.y+platform.height) { // create actual hitboxes later
-            velJ = 1;
+        // } 
+        // if (player.y > platform.y-50 && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y < platform.y+platform.height) { // create actual hitboxes later
+            // velJ = 1;
             // player.y = platform.y-50;
-        } 
+        // } 
         // if (player.y < platform.y && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y > platform.y+platform.height+5) { // create actual hitboxes later
         //     velJ = -5;
         // } 
+
+        class Box {
+        
+        constructor({
+            position = { x: 500, y: 600 },
+            color = 'red',
+            width = 100,
+            height = 100,
+            velocity = { x: 0, y: 0 },
+        }) {
+            this.position = position
+            this.width = width
+            this.height = height
+            this.color = color
+            this.velocity = velocity
+        }
+
+        draw() {
+            ctx.fillStyle = this.color
+            ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+        }
+        }
+
+        // get canvas center
+        const center = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        }
+
+        // instantiate box with left offset
+        const box1 = new Box({
+        position: {
+            x: center.x - 150,
+            y: center.y - 50,
+        },
+        color: 'red',
+        velocity: {
+            x: 70,
+        },
+        })
+
+        // instantiate box with right offset
+        const box2 = new Box({
+        position: {
+            x: center.x + 50,
+            y: center.y - 50,
+        },
+        color: 'blue',
+        })
+
+        function collision({ box1, box2 }) {
+        return (
+            box1.position.x + box1.width >= box2.position.x && // box1 right collides with box2 left
+            box2.position.x + box2.width >= box1.position.x && // box2 right collides with box1 left
+            box1.position.y + box1.height >= box2.position.y && // box1 bottom collides with box2 top
+            box2.position.y + box2.height >= box1.position.y // box1 top collides with box2 bottom
+        )
+        }
+        
+        let frame = 0
+
+        setInterval(() => {
+        frame++
+
+        // draw boxes
+        box1.draw()
+        box2.draw()
+
+        // update x position before render
+        box1.position.x += box1.velocity.x
+
+        // detect for collision (will they collide and should we render the next frame?)
+        if (collision({ box1, box2 })) {
+            box1.velocity.x = 0
+            box1.position.x = box2.position.x - box2.width - 1
+        }
+        }, 1000)
 
         // platforms
 
