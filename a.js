@@ -15,10 +15,11 @@ let player = {
     mxp: undefined,
     stamina: 10,
     skillpoint: 0,
-    x: 500,
-    y: 550,
+    x: canvas.width/2,
+    y: canvas.height-50, // 50 = player.side
     stamina: 100,
     mstamina: 100,
+    side: 50,
 };    
 
 function drawMenu() {
@@ -252,25 +253,25 @@ var velY = 0,
             }}
             // }
         }
-        if (player.y == 550) {
-            velJ =10;
+        if (player.y == canvas.height-player.side) {
+            velJ = 10;
         }
         // check the keys and do the movement.
-        if (player.y < 550 && keys["Space"] == false) {
+        if (player.y < canvas.height-player.side && keys["Space"] == false) {
             velJ--;
             velY = velJ;
         }
         if (keys["Space"]) {
-            if (player.y > 300) {
+            if (velJ < 0) {
                 if (velJ < 0) {
                     velJ -= 0.2;
                 } else {velJ -= 0.3;}
                 velY = velJ;
             } else {
-                velJ--;
+                velJ-= 0.3;
                 velY = velJ;
             }
-            console.log(player.y)
+            // console.log(player.y)
         }
         if (keys["KeyD"]) {
             if (velX < speed) {
@@ -294,48 +295,49 @@ var velY = 0,
         player.x += velX;
 
         // bounds checking
-        if (player.x >= 1030) {
-            player.x = 1030;
+        if (player.x >= canvas.width-player.side) {
+            player.x = canvas.width-player.side;
         } else if (player.x <= 0) {
             player.x = 0;
-        } else if (player.y >= 550) {
-            player.y = 550;
+        } 
+        else if (player.y >= canvas.height-player.side) {
+            player.y = canvas.height-player.side;
         }
 
         // do the drawing
         // ctx.beginPath();
         ctx.fillStyle = "#000000";
         // console.log(keys["Space"]);
-        ctx.fillRect(player.x, player.y, 50, 50);
+        ctx.fillRect(player.x, player.y, player.side, player.side);
         
         // platforms
         
         platform = {
             x: 600,
-            y: 500,
+            y: 400,
             width: 100,
             height: 100,
         };
 
         ctx.fillStyle = "#404040";
-        // ctx.fillRect(platform.x,platform.y,platform.width,platform.height);
+        ctx.fillRect(platform.x,platform.y,platform.width,platform.height);
 
-        // if (player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+        if (player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
             // velX = -1;
             // player.hp--;
-            // player.x = platform.x-50;
-        // } 
-        // if (player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+            player.x = platform.x-50;
+        } 
+        if (player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
             // velX = 1;
-            // player.x = platform.x+platform.width;
-        // } 
-        // if (player.y > platform.y-50 && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y < platform.y+platform.height) { // create actual hitboxes later
+            player.x = platform.x+platform.width;
+        } 
+        if (player.y > platform.y-50 && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y < platform.y+platform.height) { // create actual hitboxes later
             // velJ = 1;
-            // player.y = platform.y-50;
-        // } 
-        // if (player.y < platform.y && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y > platform.y+platform.height+5) { // create actual hitboxes later
-        //     velJ = -5;
-        // } 
+            player.y = platform.y-50;
+        } 
+        if (player.y < platform.y && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y > platform.y+platform.height+5) { // create actual hitboxes later
+            // velJ = -5;
+        } 
 
         class Box {
         
@@ -417,7 +419,7 @@ var velY = 0,
         // platforms
 
         // console.log(direction);
-        console.log(keys["1"])
+        // console.log(keys["1"])
     }
 keys = {
     "KeyA": false,
@@ -429,7 +431,6 @@ keys = {
 }
 // key events
 document.body.addEventListener("keydown", function (e) {
-    console.log(e);
     keys[e.code] = true;
 });
 document.body.addEventListener("keyup", function (e) {
