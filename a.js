@@ -58,19 +58,28 @@ function drawButton(x, y, text, onClick, enabled) {
     canvas.addEventListener("click", clickHandler);
 }
 
+var stop = false;
+var frameCount = 0;
+// var $results = $("#results");
+var fps, fpsInterval, startTime, now, then, elapsed;
+
+function startAnimating(fps) {
+    fpsInterval = 1000 / fps;
+    then = Date.now();
+    startTime = then;
+    update();
+}
+
 function startGame() {
     gameStarted = true; // Set gameStarted to true when the game starts
     drawMenu(); // Redraw the menu to disable the button
 
     // Call your main() function here, or include its logic directly
     player.mxp = 9+player.lvl**2;
-    update();
-
-    // You can add additional logic here for starting the game.
+    startAnimating(60) // doesnt work
 }
 
 // chat gpt menu: end
-// will probably replace later when i know more
 
 function enemySpawn(player) {
     let enemy = {
@@ -167,7 +176,9 @@ var velY = 0,
             ctx.fillText("Game Over!", canvas.width / 4, canvas.height / 2 - 50);
             return null;
         }
+        
         requestAnimationFrame(update);
+        
         if (keys["Escape"]) { // idk how ths works
             pause();
         }
@@ -309,9 +320,12 @@ var velY = 0,
         ctx.fillStyle = "#000000";
         // console.log(keys["Space"]);
         ctx.fillRect(player.x, player.y, player.side, player.side);
+
+        // console.log(direction);
+        // console.log(keys["1"])
         
         // platforms
-        
+
         platform = {
             x: 600,
             y: 400,
@@ -321,13 +335,12 @@ var velY = 0,
 
         ctx.fillStyle = "#404040";
         ctx.fillRect(platform.x,platform.y,platform.width,platform.height);
-
-        if (player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+        if (player.x < platform.x-45 && player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
             // velX = -1;
             // player.hp--;
             player.x = platform.x-50;
         } 
-        if (player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+        if (player.x > platform.x+platform.width-5 && player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
             // velX = 1;
             player.x = platform.x+platform.width;
         } 
@@ -339,87 +352,7 @@ var velY = 0,
             // velJ = -5;
         } 
 
-        class Box {
-        
-        constructor({
-            position = { x: 500, y: 600 },
-            color = 'red',
-            width = 100,
-            height = 100,
-            velocity = { x: 0, y: 0 },
-        }) {
-            this.position = position
-            this.width = width
-            this.height = height
-            this.color = color
-            this.velocity = velocity
-        }
-
-        draw() {
-            ctx.fillStyle = this.color
-            ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
-        }
-        }
-
-        // get canvas center
-        const center = {
-        x: canvas.width / 2,
-        y: canvas.height / 2,
-        }
-
-        // instantiate box with left offset
-        const box1 = new Box({
-        position: {
-            x: center.x - 150,
-            y: center.y - 50,
-        },
-        color: 'red',
-        velocity: {
-            x: 70,
-        },
-        })
-
-        // instantiate box with right offset
-        const box2 = new Box({
-        position: {
-            x: center.x + 50,
-            y: center.y - 50,
-        },
-        color: 'blue',
-        })
-
-        function collision({ box1, box2 }) {
-        return (
-            box1.position.x + box1.width >= box2.position.x && // box1 right collides with box2 left
-            box2.position.x + box2.width >= box1.position.x && // box2 right collides with box1 left
-            box1.position.y + box1.height >= box2.position.y && // box1 bottom collides with box2 top
-            box2.position.y + box2.height >= box1.position.y // box1 top collides with box2 bottom
-        )
-        }
-        
-        let frame = 0
-
-        setInterval(() => {
-        frame++
-
-        // draw boxes
-        box1.draw()
-        box2.draw()
-
-        // update x position before render
-        box1.position.x += box1.velocity.x
-
-        // detect for collision (will they collide and should we render the next frame?)
-        if (collision({ box1, box2 })) {
-            box1.velocity.x = 0
-            box1.position.x = box2.position.x - box2.width - 1
-        }
-        }, 1000)
-
         // platforms
-
-        // console.log(direction);
-        // console.log(keys["1"])
     }
 keys = {
     "KeyA": false,
