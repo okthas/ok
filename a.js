@@ -13,13 +13,13 @@ let player = {
     lvl: 1,
     xp: 0,
     mxp: undefined,
-    stamina: 10,
     skillpoint: 0,
     x: canvas.width/2,
     y: canvas.height-50, // 50 = player.side
     stamina: 100,
     mstamina: 100,
-    side: 50,
+    height: 50,
+    width: 50,
 };    
 
 function drawMenu() {
@@ -122,8 +122,8 @@ function select() { // will spawn enemies depending on the coordinates when i ha
 
 function leveling(player) {
     while (player.xp >= player.mxp) {
-        if (player.lvl = 50) {
-            break;
+        if (player.lvl == 50) {
+            return player.xp = player.mxp
         };
         player.lvl += 1;
         player.mhp += 5
@@ -141,10 +141,44 @@ var velY = 0,
     friction = 0.93, // friction
     velJ = 10;
     direction = "Right";
-    
+
+platform = {
+    x: 600,
+    y: 400,
+    width: 100,
+    height: 100,
+};
+
+
+function checkCollision() {
+    return (player.y + player.height >= platform.y &&
+            player.y <= platform.y + platform.height &&
+            player.x + player.width >= platform.x &&
+            player.x <= platform.x + platform.width);
+}
+
     function update() {
+           
+        // request another frame
+
+        requestAnimationFrame(update);
+
+        // calc elapsed time since last loop
+
+        now = Date.now();
+        elapsed = now - then;
+
+        // if enough time has elapsed, draw the next frame
+
+        if (elapsed > fpsInterval) {
+
+            // Get ready for next frame by setting then=now, but also adjust for your
+            // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+            then = now - (elapsed % fpsInterval);
+
+            // Put your drawing code here
         ctx.clearRect(0, 0, 1080, 1080);
-        
+    
         // player stamina bar
         ctx.fillStyle = "#fff";
         ctx.fillRect(20,60,player.mstamina,10);
@@ -176,9 +210,7 @@ var velY = 0,
             ctx.fillText("Game Over!", canvas.width / 4, canvas.height / 2 - 50);
             return null;
         }
-        
-        requestAnimationFrame(update);
-        
+                    
         if (keys["Escape"]) { // idk how ths works
             pause();
         }
@@ -264,11 +296,11 @@ var velY = 0,
             }}
             // }
         }
-        if (player.y == canvas.height-player.side) {
+        if (player.y == canvas.height-player.height) {
             velJ = 10;
         }
         // check the keys and do the movement.
-        if (player.y < canvas.height-player.side && keys["Space"] == false) {
+        if (player.y < canvas.height-player.height && keys["Space"] == false) {
             velJ--;
             velY = velJ;
         }
@@ -306,54 +338,67 @@ var velY = 0,
         player.x += velX;
 
         // bounds checking
-        if (player.x >= canvas.width-player.side) {
-            player.x = canvas.width-player.side;
+        if (player.x >= canvas.width-player.width) {
+            player.x = canvas.width-player.width;
         } else if (player.x <= 0) {
             player.x = 0;
         } 
-        else if (player.y >= canvas.height-player.side) {
-            player.y = canvas.height-player.side;
+        else if (player.y >= canvas.height-player.height) {
+            player.y = canvas.height-player.height;
         }
 
         // do the drawing
         // ctx.beginPath();
         ctx.fillStyle = "#000000";
         // console.log(keys["Space"]);
-        ctx.fillRect(player.x, player.y, player.side, player.side);
+        ctx.fillRect(player.x, player.y, player.width, player.height);
 
         // console.log(direction);
         // console.log(keys["1"])
         
         // platforms
 
-        platform = {
-            x: 600,
-            y: 400,
-            width: 100,
-            height: 100,
-        };
-
         ctx.fillStyle = "#404040";
-        ctx.fillRect(platform.x,platform.y,platform.width,platform.height);
-        if (player.x < platform.x-45 && player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
-            // velX = -1;
-            // player.hp--;
-            player.x = platform.x-50;
-        } 
-        if (player.x > platform.x+platform.width-5 && player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
-            // velX = 1;
-            player.x = platform.x+platform.width;
-        } 
-        if (player.y > platform.y-50 && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y < platform.y+platform.height) { // create actual hitboxes later
-            // velJ = 1;
-            player.y = platform.y-50;
-        } 
-        if (player.y < platform.y && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y > platform.y+platform.height+5) { // create actual hitboxes later
-            // velJ = -5;
-        } 
+        ctx.fillRect(platform.x,platform.y,platform.width,platform.height);     
+        console.log(checkCollision())
+        if (checkCollision()) {
+            // Adjust player's position based on collision
+            if (player.y + player.height >= platform.y && player.y < platform.y) {
+                // Player is above the platform
+                player.y = platform.y - player.height;
+            }
+            if (player.y <= platform.y + platform.height && player.y + player.height > platform.y + platform.height) {
+                // Player is below the platform
+                player.y = platform.y + platform.height;
+            }
+            if (player.x + player.width >= platform.x && player.x < platform.x) {
+                // Player is to the left of the platform
+                player.x = platform.x - player.width;
+            }
+            if (player.x <= platform.x + platform.width && player.x + player.width > platform.x + platform.width) {
+                // Player is to the right of the platform
+                player.x = platform.x + platform.width;
+            }
+        }
+        // if (player.x < platform.x-45 && player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+        //     // velX = -1;
+        //     // player.hp--;
+        //     player.x = platform.x-50;
+        // } 
+        // if (player.x > platform.x+platform.width-5 && player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
+        //     // velX = 1;
+        //     player.x = platform.x+platform.width;
+        // } 
+        // if (player.y > platform.y-50 && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y < platform.y+platform.height) { // create actual hitboxes later
+        //     // velJ = 1;
+        //     player.y = platform.y-50;
+        // } 
+        // if (player.y < platform.y && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y > platform.y+platform.height+5) { // create actual hitboxes later
+        //     velJ = -5;
+        // } 
 
         // platforms
-    }
+    }}
 keys = {
     "KeyA": false,
     "KeyD": false,
