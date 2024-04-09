@@ -140,14 +140,13 @@ var velY = 0,
     velJ = 10;
     direction = "Right";
 
-platform = { // create platform object with variable variables? lol
-    x: 600,
-    y: 400,
-    width: 100,
-    height: 100,
-};
+
 
 // overdone platform bs
+
+let platforms = {
+    platform0: createPlatform(600, 400, 100, 100) // x, y, width, height
+}
 
 function checkCollision(platform) {
     return (player.y + player.height >= platform.y &&
@@ -156,10 +155,25 @@ function checkCollision(platform) {
             player.x <= platform.x + platform.width);
 } function hitBox(Collision, platform) {
     if (Collision) {
+        if (player.x > platform.x - player.width && player.x < platform.x + platform.width && player.y > platform.y - player.height) {
+            player.y = platform.y - player.height
+        }
         // make new conditions
-}} function createPlatform(platform) {
-    return hitBox(checkCollision(platform), platform)
-}
+}} function createPlatform(x, y, width, height) {
+    let platform = {
+        x: x,
+        y: y,
+        width: width,
+        height: height,
+    }; return platform
+} function renderPlatform(platform) {
+    ctx.fillStyle = "#404040";
+    ctx.fillRect(platform.x,platform.y,platform.width,platform.height); 
+} function collisionUltra(platforms) {
+    for ( i=0; i<platforms.length; i++ ) {
+        if (checkCollision(platforms["platform"+i])) {
+            return true
+}}}
 
     function update() {
            
@@ -290,23 +304,18 @@ function checkCollision(platform) {
                 } else if (velX == -20) {
                     player.stamina -= 20;
         }}}
-        if (player.y == canvas.height-player.height) {
+        if (player.y == canvas.height-player.height || checkCollision(platforms.platform0)) { // easier way to control all platforms later
             velJ = 10;
         }
-        if ((player.y < canvas.height-player.height && keys.Space == false && (player.x < platform.x + platform.width && player.x > platform.x - player.width) == false) || (player.x < platform.x + platform.width && player.x > platform.x - player.width && player.y < platform.y - player.height)) {
+        if ((player.y < canvas.height-player.height && keys.Space == false && checkCollision(platforms.platform0) == false) || checkCollision(platforms.platform0)) { // (it doesn't work properly, it worked better before "platform0")
             velJ--;
             velY = velJ;
         }
+        // if ((player.y == 299.619 && player.x > platform.x + platform.width || player.x < platform.x - player.width) || (velJ < 0 && keys.Space)) { keys.Space == false }
         if (keys.Space) {
-            if (velJ < 0) {
-                if (velJ < 0) {
-                    velJ -= 0.2;
-                } else {velJ -= 0.3;}
-                velY = velJ;
-            } else {
-                velJ-= 0.3;
-                velY = velJ;
-        }}
+            velJ-= 0.3;
+            velY = velJ;
+        }
         if (keys.KeyD) {
             if (velX < speed) {
                 velX++;
@@ -327,23 +336,18 @@ function checkCollision(platform) {
         player.x += velX;
 
         // bounds checking
-        if (player.x >= canvas.width-player.width) {
+        if (player.x > canvas.width-player.width) {
             player.x = canvas.width-player.width;
-        } else if (player.x <= 0) {
+        } else if (player.x < 0) {
             player.x = 0;
-        } 
-        else if (player.y >= canvas.height-player.height) {
+        } else if (player.y > canvas.height-player.height) {
             player.y = canvas.height-player.height;
         }
 
         ctx.fillStyle = "#000000";
         ctx.fillRect(player.x, player.y, player.width, player.height);
 
-        ctx.fillStyle = "#404040";
-        ctx.fillRect(platform.x,platform.y,platform.width,platform.height);     
-        console.log(checkCollision(platform))
-        
-        createPlatform(platform)
+        renderPlatform(platforms.platform0)
     }}
 keys = {
     "KeyA": false,
