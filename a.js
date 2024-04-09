@@ -307,7 +307,7 @@ function checkCollision(platform) {
         if (player.y == canvas.height-player.height) {
             velJ = 10;
         }
-        if (player.y < canvas.height-player.height && keys.Space == false) {
+        if ((player.y < canvas.height-player.height && keys.Space == false && (player.x < platform.x + platform.width && player.x > platform.x - player.width) == false) || (player.x < platform.x + platform.width && player.x > platform.x - player.width && player.y < platform.y - player.height)) {
             velJ--;
             velY = velJ;
         }
