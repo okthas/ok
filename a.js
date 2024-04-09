@@ -140,7 +140,7 @@ var velY = 0,
     velJ = 10;
     direction = "Right";
 
-platform = {
+platform = { // create platform object with variable variables? lol
     x: 600,
     y: 400,
     width: 100,
@@ -155,24 +155,9 @@ function checkCollision(platform) {
             player.x <= platform.x + platform.width);
 } function hitBox(Collision, platform) {
     if (Collision) {
-        // Adjust player's position based on collision
-        if (player.y + player.height >= platform.y && player.y < platform.y) {
-            // Player is above the platform
-            player.y = platform.y - player.height;
-        }
-        if (player.y <= platform.y + platform.height && player.y + player.height > platform.y + platform.height) {
-            // Player is below the platform
-            player.y = platform.y + platform.height;
-        }
-        if (player.x + player.width >= platform.x && player.x < platform.x) {
-            // Player is to the left of the platform
-            player.x = platform.x - player.width;
-        }
-        if (player.x <= platform.x + platform.width && player.x + player.width > platform.x + platform.width) {
-            // Player is to the right of the platform
-            player.x = platform.x + platform.width;
-        }
-    }
+        // make new conditions
+}} function createPlatform(platform) {
+    return hitBox(checkCollision(platform), platform)
 }
 
     function update() {
@@ -357,7 +342,7 @@ function checkCollision(platform) {
         ctx.fillRect(platform.x,platform.y,platform.width,platform.height);     
         console.log(checkCollision(platform))
         
-        hitBox(checkCollision, platform)
+        createPlatform(platform)
     }}
 keys = {
     "KeyA": false,
