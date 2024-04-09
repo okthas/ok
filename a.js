@@ -117,21 +117,19 @@ function chest(player) {
 function select() { // will spawn enemies depending on the coordinates when i have a map
     if (true) {
         return null
-    };
-}
+}}
 
 function leveling(player) {
     while (player.xp >= player.mxp) {
         if (player.lvl == 50) {
             return player.xp = player.mxp
-        };
+        }
         player.lvl += 1;
         player.mhp += 5
         player.hp = player.mhp
         player.skillpoint += 1
         player.xp -= player.mxp
-    };
-}
+}}
 
 //movement
 
@@ -150,11 +148,31 @@ platform = {
 };
 
 
-function checkCollision() {
+function checkCollision(platform) {
     return (player.y + player.height >= platform.y &&
             player.y <= platform.y + platform.height &&
             player.x + player.width >= platform.x &&
             player.x <= platform.x + platform.width);
+} function hitBox(Collision, platform) {
+    if (Collision) {
+        // Adjust player's position based on collision
+        if (player.y + player.height >= platform.y && player.y < platform.y) {
+            // Player is above the platform
+            player.y = platform.y - player.height;
+        }
+        if (player.y <= platform.y + platform.height && player.y + player.height > platform.y + platform.height) {
+            // Player is below the platform
+            player.y = platform.y + platform.height;
+        }
+        if (player.x + player.width >= platform.x && player.x < platform.x) {
+            // Player is to the left of the platform
+            player.x = platform.x - player.width;
+        }
+        if (player.x <= platform.x + platform.width && player.x + player.width > platform.x + platform.width) {
+            // Player is to the right of the platform
+            player.x = platform.x + platform.width;
+        }
+    }
 }
 
     function update() {
@@ -211,10 +229,10 @@ function checkCollision() {
             return null;
         }
                     
-        if (keys["Escape"]) { // idk how ths works
+        if (keys.Escape) { // idk how ths works
             pause();
         }
-        if(keys["1"]){
+        if(keys.leftClick){
             keys.Space = false;
             keys.KeyA = false;
             keys.KeyD = false;
@@ -237,7 +255,7 @@ function checkCollision() {
             }
             console.log(attackCharge);
         }
-        if (keys["1"] == false) {
+        if (keys.leftClick == false) {
             if (attackCharge > 15 && attackCharge < 35) {
                 if (player.stamina > 10) {
                     if (direction == "Right") {
@@ -274,13 +292,7 @@ function checkCollision() {
         if (player.stamina < player.mstamina) {
             player.stamina += player.mstamina*0.0025;
         }
-        if (keys["ControlLeft"]) {
-            // if ( you have the teleport ability ) {
-            //     if (direction == "Right" && velX <= 3 && velX >= 0) {
-            //         player.X += 30;
-            //     } else if (direction == "Left" && velX >= -3 && velX <= 0) {
-            //         player.X -= 30;
-            //     } else {
+        if (keys.ControlLeft) {
             if (player.stamina > 20) {
                 if (direction == "Right" && velX <= 3 && velX >= 0) {
                     velX = 20;
@@ -289,22 +301,17 @@ function checkCollision() {
                 }
                 if (velX == 20) {
                     player.stamina -= 20;
-                    // player.hp--;
                 } else if (velX == -20) {
                     player.stamina -= 20;
-                    // player.hp--;
-            }}
-            // }
-        }
+        }}}
         if (player.y == canvas.height-player.height) {
             velJ = 10;
         }
-        // check the keys and do the movement.
-        if (player.y < canvas.height-player.height && keys["Space"] == false) {
+        if (player.y < canvas.height-player.height && keys.Space == false) {
             velJ--;
             velY = velJ;
         }
-        if (keys["Space"]) {
+        if (keys.Space) {
             if (velJ < 0) {
                 if (velJ < 0) {
                     velJ -= 0.2;
@@ -313,21 +320,17 @@ function checkCollision() {
             } else {
                 velJ-= 0.3;
                 velY = velJ;
-            }
-            // console.log(player.y)
-        }
-        if (keys["KeyD"]) {
+        }}
+        if (keys.KeyD) {
             if (velX < speed) {
                 velX++;
                 direction = "Right";
-            }
-        }
-        if (keys["KeyA"]) {
+        }}
+        if (keys.KeyA) {
             if (velX > -speed) {
                 velX--;
                 direction = "Left";
-            }
-        }
+        }}
 
         // apply some friction to y velocity.
         velY *= friction;
@@ -347,57 +350,14 @@ function checkCollision() {
             player.y = canvas.height-player.height;
         }
 
-        // do the drawing
-        // ctx.beginPath();
         ctx.fillStyle = "#000000";
-        // console.log(keys["Space"]);
         ctx.fillRect(player.x, player.y, player.width, player.height);
-
-        // console.log(direction);
-        // console.log(keys["1"])
-        
-        // platforms
 
         ctx.fillStyle = "#404040";
         ctx.fillRect(platform.x,platform.y,platform.width,platform.height);     
-        console.log(checkCollision())
-        if (checkCollision()) {
-            // Adjust player's position based on collision
-            if (player.y + player.height >= platform.y && player.y < platform.y) {
-                // Player is above the platform
-                player.y = platform.y - player.height;
-            }
-            if (player.y <= platform.y + platform.height && player.y + player.height > platform.y + platform.height) {
-                // Player is below the platform
-                player.y = platform.y + platform.height;
-            }
-            if (player.x + player.width >= platform.x && player.x < platform.x) {
-                // Player is to the left of the platform
-                player.x = platform.x - player.width;
-            }
-            if (player.x <= platform.x + platform.width && player.x + player.width > platform.x + platform.width) {
-                // Player is to the right of the platform
-                player.x = platform.x + platform.width;
-            }
-        }
-        // if (player.x < platform.x-45 && player.x >= platform.x-50 && player.y > platform.y-45 && player.x < platform.x+platform.width-5 && player.y < platform.y+platform.height-5) { // create actual hitboxes later
-        //     // velX = -1;
-        //     // player.hp--;
-        //     player.x = platform.x-50;
-        // } 
-        // if (player.x > platform.x+platform.width-5 && player.x >= platform.x-45 && player.y > platform.y-45 && player.x < platform.x+platform.width && player.y < platform.y+platform.height-5) { // create actual hitboxes later
-        //     // velX = 1;
-        //     player.x = platform.x+platform.width;
-        // } 
-        // if (player.y > platform.y-50 && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y < platform.y+platform.height) { // create actual hitboxes later
-        //     // velJ = 1;
-        //     player.y = platform.y-50;
-        // } 
-        // if (player.y < platform.y && player.x > platform.x-50 && player.x < platform.x+platform.width && player.y > platform.y+platform.height+5) { // create actual hitboxes later
-        //     velJ = -5;
-        // } 
-
-        // platforms
+        console.log(checkCollision(platform))
+        
+        hitBox(checkCollision, platform)
     }}
 keys = {
     "KeyA": false,
@@ -405,7 +365,7 @@ keys = {
     "Space": false,
     "ControlLeft": false,
     "Escape": false,
-    "1": false,
+    "leftClick": false,
 }
 // key events
 document.body.addEventListener("keydown", function (e) {
@@ -421,10 +381,10 @@ document.body.addEventListener("keyup", function (e) {
 
 let attackCharge = 0;
 document.body.addEventListener("mousedown", function (e) {
-    keys["1"] = true;
+    keys.leftClick = true;
 });
 document.body.addEventListener("mouseup", function (e) {
-    keys["1"] = false;
+    keys.leftClick = false;
     
 });
 
