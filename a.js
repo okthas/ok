@@ -147,6 +147,7 @@ platform = { // create platform object with variable variables? lol
     height: 100,
 };
 
+// overdone platform bs
 
 function checkCollision(platform) {
     return (player.y + player.height >= platform.y &&
