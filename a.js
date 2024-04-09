@@ -169,6 +169,7 @@ function checkCollision(platform) {
 } function renderPlatform(platform) {
     ctx.fillStyle = "#404040";
     ctx.fillRect(platform.x,platform.y,platform.width,platform.height); 
+    hitBox(checkCollision(platform), platform)
 } function collisionUltra(platforms) {
     for ( i=0; i<platforms.length; i++ ) {
         if (checkCollision(platforms["platform"+i])) {
@@ -307,10 +308,10 @@ function checkCollision(platform) {
         if (player.y == canvas.height-player.height || checkCollision(platforms.platform0)) { // easier way to control all platforms later
             velJ = 10;
         }
-        if ((player.y < canvas.height-player.height && keys.Space == false && checkCollision(platforms.platform0) == false) || checkCollision(platforms.platform0)) { // (it doesn't work properly, it worked better before "platform0")
-            velJ--;
-            velY = velJ;
-        }
+        if (player.y < canvas.height - player.height && !checkCollision(platforms.platform0) && !keys.Space) {
+            velJ-- 
+            velY == velJ
+        } // it doesn't work at all, it did kind of b4
         // if ((player.y == 299.619 && player.x > platform.x + platform.width || player.x < platform.x - player.width) || (velJ < 0 && keys.Space)) { keys.Space == false }
         if (keys.Space) {
             velJ-= 0.3;
@@ -327,11 +328,11 @@ function checkCollision(platform) {
                 direction = "Left";
         }}
 
-        // apply some friction to y velocity.
+        // apply some friction to y velocity
         velY *= friction;
         player.y -= velY;
 
-        // apply some friction to x velocity.
+        // apply some friction to x velocity
         velX *= friction;
         player.x += velX;
 
