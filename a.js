@@ -137,8 +137,9 @@ var velY = 0,
     velX = 0,
     speed = 3, // max speed
     friction = 0.93, // friction
-    velJ = 10;
-    direction = "Right";
+    direction = "Right",
+    jumpMultiplier = 0
+;
 
 
 
@@ -155,7 +156,7 @@ function checkCollision(platform) {
             player.x <= platform.x + platform.width);
 } function hitBox(Collision, platform) {
     if (Collision) {
-        if (player.x > platform.x - player.width && player.x < platform.x + platform.width && player.y > platform.y - player.height) {
+        if (player.y >= platform.y - player.height) {
             player.y = platform.y - player.height
         }
         // make new conditions
@@ -170,11 +171,7 @@ function checkCollision(platform) {
     ctx.fillStyle = "#404040";
     ctx.fillRect(platform.x,platform.y,platform.width,platform.height); 
     hitBox(checkCollision(platform), platform)
-} function collisionUltra(platforms) {
-    for ( i=0; i<platforms.length; i++ ) {
-        if (checkCollision(platforms["platform"+i])) {
-            return true
-}}}
+}
 
     function update() {
            
@@ -293,30 +290,30 @@ function checkCollision(platform) {
         if (player.stamina < player.mstamina) {
             player.stamina += player.mstamina*0.0025;
         }
-        if (keys.ControlLeft) {
-            if (player.stamina > 20) {
-                if (direction == "Right" && velX <= 3 && velX >= 0) {
-                    velX = 20;
-                } else if (direction == "Left" && velX >= -3 && velX <= 0) {
-                    velX = -20;
-                }
-                if (velX == 20) {
-                    player.stamina -= 20;
-                } else if (velX == -20) {
-                    player.stamina -= 20;
-        }}}
+        if (keys.ControlLeft && player.stamina > 20) {
+            if (direction == "Right" && velX <= 3 && velX >= 0) {
+                velX = 20;
+            } else if (direction == "Left" && velX >= -3 && velX <= 0) {
+                velX = -20;
+            }
+            if (velX == 20) {
+                player.stamina -= 20;
+            } else if (velX == -20) {
+                player.stamina -= 20;
+        }}
         if (player.y == canvas.height-player.height || checkCollision(platforms.platform0)) { // easier way to control all platforms later
-            velJ = 10;
+            if (keys.Space) {velY = 14}
+            jumpMultiplier = 0
         }
         if (player.y < canvas.height - player.height && !checkCollision(platforms.platform0) && !keys.Space) {
-            velJ-- 
-            velY == velJ
-        } // it doesn't work at all, it did kind of b4
-        // if ((player.y == 299.619 && player.x > platform.x + platform.width || player.x < platform.x - player.width) || (velJ < 0 && keys.Space)) { keys.Space == false }
-        if (keys.Space) {
-            velJ-= 0.3;
-            velY = velJ;
+            velY-=0.8
         }
+        if (keys.Space) {
+            if (jumpMultiplier >= 50) {velY--}
+            else {            
+                velY -= 0.03
+                jumpMultiplier++
+        }}
         if (keys.KeyD) {
             if (velX < speed) {
                 velX++;
