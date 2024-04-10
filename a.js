@@ -156,10 +156,12 @@ function checkCollision(platform) {
             player.x <= platform.x + platform.width);
 } function hitBox(Collision, platform) {
     if (Collision) {
-        if (player.y >= platform.y - player.height) {
+        if (player.y <= platform.y - player.height + 12) {
             player.y = platform.y - player.height
         }
-        // make new conditions
+        if (player.x <= platform.x - player.width + 20) {
+            player.x = platform.x - player.width
+        }
 }} function createPlatform(x, y, width, height) {
     let platform = {
         x: x,
@@ -195,6 +197,9 @@ function checkCollision(platform) {
             // Put your drawing code here
         ctx.clearRect(0, 0, 1080, 1080);
     
+
+        
+
         // player stamina bar
         ctx.fillStyle = "#fff";
         ctx.fillRect(20,60,player.mstamina,10);
@@ -326,12 +331,14 @@ function checkCollision(platform) {
         }}
 
         // apply some friction to y velocity
-        velY *= friction;
         player.y -= velY;
+        velY *= friction;
 
         // apply some friction to x velocity
-        velX *= friction;
         player.x += velX;
+        velX *= friction;
+
+        renderPlatform(platforms.platform0)
 
         // bounds checking
         if (player.x > canvas.width-player.width) {
@@ -344,8 +351,6 @@ function checkCollision(platform) {
 
         ctx.fillStyle = "#000000";
         ctx.fillRect(player.x, player.y, player.width, player.height);
-
-        renderPlatform(platforms.platform0)
     }}
 keys = {
     "KeyA": false,
