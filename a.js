@@ -18,8 +18,8 @@ let player = {
     y: canvas.height-50, // 50 = player.side
     stamina: 100,
     mstamina: 100,
-    height: 50,
-    width: 50,
+    height: 50, // player.width * sprite.height / sprite.width
+    width: 50, // set value
 };    
 
 function drawMenu() {
@@ -376,7 +376,7 @@ function checkCollision(platform) {
         ctx.fillStyle = "#000000";
         ctx.fillRect(player.x, player.y, player.width, player.height);
         // replace with:
-        ctx.drawImage(playerImage, sx, sy, sw, sh, player.x, player.y, player.width, player.height)
+        ctx.drawImage(playerImage, sprite.frameX * sprite.width, sprite.frameY * sprite.height, sprite.width, sprite.height, player.x, player.y, player.width, player.height)
         
         // apply some friction to y velocity
         player.y -= velY;
