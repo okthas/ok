@@ -364,7 +364,7 @@ function checkCollision(platform) {
                 } if (i == 100) { velX = velX2; velY = velY2 }
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
         }}
-        if (checkCollisionSpeed(0,-1,platforms.platform0)) {velX-=0.2} // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to
+        if (checkCollisionSpeed(0,-1,platforms.platform0)) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to
         ctx.fillStyle = "#000000";
         ctx.fillRect(player.x, player.y, player.width, player.height);
         // apply some friction to y velocity
