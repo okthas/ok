@@ -340,27 +340,31 @@ function checkCollision(platform) {
             if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
             else {
                 for (i=0;i<100;i++) {
-                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
-                    velX-=0.2
-                } if (i == 100) { velX = velX2 }
-                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
-                for (i=0;i<100;i++) {
+                    velX = 0
                     if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
                     velY-=0.2
-                } if (i == 100) { velY = velY2 }
+                } if (i == 100) { velY = velY2; velX = velX2 }
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
                 for (i=0;i<100;i++) {
+                    velY = 0
                     if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
                     velX+=0.2
-                } if (i == 100) { velX = velX2 }
+                } if (i == 100) { velX = velX2; velY = velY2 }
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
                 for (i=0;i<100;i++) {
+                    velX = 0
                     if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
-                    velY+=0.1
-                } if (i == 100) { velY = velY2 }
+                    velY+=0.2
+                } if (i == 100) { velY = velY2; velX = velX2 }
+                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+                for (i=0;i<100;i++) {
+                    velY = 0
+                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    velX-=0.2
+                } if (i == 100) { velX = velX2; velY = velY2 }
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
         }}
-        console.log(keys.Space)
+        if (checkCollisionSpeed(0,-1,platforms.platform0)) {velX-=0.2}
         ctx.fillStyle = "#000000";
         ctx.fillRect(player.x, player.y, player.width, player.height);
         // apply some friction to y velocity
