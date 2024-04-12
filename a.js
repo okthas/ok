@@ -14,7 +14,7 @@ let player = {
     xp: 0,
     mxp: undefined,
     skillpoint: 0,
-    x: canvas.width/2,
+    x: 300,
     y: canvas.height-50, // 50 = player.side
     stamina: 100,
     mstamina: 100,
@@ -141,12 +141,30 @@ var velY = 0,
     jumpMultiplier = 0
 ;
 
+// sprite
 
+// https://www.youtube.com/watch?v=CY0HE277IBM
+
+const playerImage = new Image()
+playerImage.src = ""
+
+let sprite = {
+    width: 0, //imagewidth / amount of images     imagewidth / sprite width = amount of sprites
+    height: 0, // same except height
+    frameY: 0, // this will determine what kind of animation with be displayed
+    frameX: 0, // this will determine which part of the animation thats being played that the player is on
+}
+
+function text(sentence) {
+    for (i=0; i<sentence.length; i++) {
+        // return sentence[>i].stack // you get the idea, it will then run the same sentence except with one less letter/space/number/other characters in the update() function
+    }
+}
 
 // overdone platform bs
 
 let platforms = {
-    platform0: createPlatform(600, 400, 100, 100) // x, y, width, height
+    platform0: createPlatform(600, canvas.height-100, 100, 100) // x, y, width, height
 }
 function checkCollisionSpeed(velX, velY, platform) {
     return (player.y - velY + player.height >= platform.y &&
@@ -245,46 +263,35 @@ function checkCollision(platform) {
             keys.KeyA = false;
             keys.KeyD = false;
             keys.ControlLeft = false;
-            if (attackCharge < 70) {
+            if (attackCharge < 50) {
                 attackCharge++;
             }
-            if (attackCharge >= 15 && attackCharge < 35) {
-                ctx.fillStyle = "#fc0";
-                ctx.fillRect(player.x-10,player.y-15,attackCharge,5);
-            } else if (attackCharge >= 35 && attackCharge < 70) {
-                ctx.fillStyle = "#f80";
-                ctx.fillRect(player.x-10,player.y-15,attackCharge,5);
-            } else if (attackCharge == 70) {
-                ctx.fillStyle = "#f00";
-                ctx.fillRect(player.x-10,player.y-15,attackCharge,5);
+            if (attackCharge >= 20 && attackCharge < 50) {
+                ctx.fillStyle = "#fcc";
+                ctx.fillRect(player.x-10,player.y-15,attackCharge*1.4,5);
+            } else if (attackCharge == 50) {
+                ctx.fillStyle = "#f55";
+                ctx.fillRect(player.x-10,player.y-15,attackCharge*1.4,5);
             } else {
-                ctx.fillStyle = "#fff";
-                ctx.fillRect(player.x-10,player.y-15,attackCharge,5);
+                ctx.fillStyle = "#ddd";
+                ctx.fillRect(player.x-10,player.y-15,attackCharge*1.4,5);
             }
             console.log(attackCharge);
         }
-        if (keys.leftClick == false) {
-            if (attackCharge > 15 && attackCharge < 35) {
+        if (!keys.leftClick) {
+            if (attackCharge > 0 && attackCharge < 15) {
                 if (player.stamina > 10) {
+                    player.stamina-=10
+            }} if (attackCharge > 20 && attackCharge < 50) {
+                if (player.stamina > 15) {
                     if (direction == "Right") {
-                        player.stamina-=10;
-                        velX = 5;
+                        player.stamina-=25;
+                        velX = 7;
                     }
                     if (direction == "Left") {
-                        player.stamina-=10;
-                        velX = -5;
-                }}
-            } else if (attackCharge >= 35 && attackCharge < 70) {
-                if (player.stamina > 20) {
-                    if (direction == "Right") {
-                        player.stamina-=20;
-                        velX = 10;
-                    }
-                    if (direction == "Left") {
-                        player.stamina-=20;
-                        velX = -10;
-                }}
-            } else if (attackCharge == 70) {
+                        player.stamina-=25;
+                        velX = -7;
+            }}} else if (attackCharge == 50) {
                 if (player.stamina > 50) {
                     if (direction == "Right") {
                         player.stamina-=50;
@@ -365,8 +372,12 @@ function checkCollision(platform) {
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
         }}
         if (checkCollisionSpeed(0,-1,platforms.platform0)) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to
+        
         ctx.fillStyle = "#000000";
         ctx.fillRect(player.x, player.y, player.width, player.height);
+        // replace with:
+        ctx.drawImage(playerImage, sx, sy, sw, sh, player.x, player.y, player.width, player.height)
+        
         // apply some friction to y velocity
         player.y -= velY;
         velY *= friction;
@@ -385,7 +396,6 @@ function checkCollision(platform) {
         } else if (player.y > canvas.height-player.height) {
             player.y = canvas.height-player.height;
         }
-
     }}
 keys = {
     "KeyA": false,
@@ -398,6 +408,7 @@ keys = {
 // key events
 document.body.addEventListener("keydown", function (e) {
     keys[e.code] = true;
+    console.log(e.code)
 });
 document.body.addEventListener("keyup", function (e) {
     keys[e.code] = false;
