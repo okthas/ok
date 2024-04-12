@@ -334,29 +334,30 @@ function checkCollision(platform) {
                 velX--;
                 direction = "Left";
         }}
-
+        let velX2 = velX,
+            velY2 = velY;
         while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
             if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
             else {
                 for (i=0;i<100;i++) {
                     if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
                     velX-=0.2
-                } if (i == 100) { velX += 20 }
+                } if (i == 100) { velX = velX2 }
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
                 for (i=0;i<100;i++) {
                     if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
                     velY-=0.2
-                } if (i == 100) { velY += 20 }
+                } if (i == 100) { velY = velY2 }
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
                 for (i=0;i<100;i++) {
                     if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
                     velX+=0.2
-                } if (i == 100) { velX -= 20 }
+                } if (i == 100) { velX = velX2 }
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
                 for (i=0;i<100;i++) {
                     if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
                     velY+=0.1
-                } if (i == 100) { velY -= 20 }
+                } if (i == 100) { velY = velY2 }
                 if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
         }}
         console.log(keys.Space)
