@@ -311,15 +311,15 @@ function checkCollision(platform) {
             } else if (velX == -20) {
                 player.stamina -= 20;
         }}
-        if (player.y == canvas.height-player.height || checkCollision(platforms.platform0)) { // easier way to control all platforms later
-            if (keys.Space) {velY = 14}
+        if ((player.y <= canvas.height-player.height && player.y >= canvas.height - player.height - 1) || checkCollisionSpeed(velX, -1, platforms.platform0)) { // easier way to control all platforms later
+            if (keys.Space) { velY = 14 }
             jumpMultiplier = 0
         }
         if (player.y < canvas.height - player.height && !checkCollision(platforms.platform0) && !keys.Space) {
             velY-=0.8
         }
         if (keys.Space) {
-            if (jumpMultiplier >= 50) {velY--}
+            if (jumpMultiplier >= 50) { velY-- }
             else {            
                 velY -= 0.03
                 jumpMultiplier++
