@@ -148,7 +148,12 @@ var velY = 0,
 let platforms = {
     platform0: createPlatform(600, 400, 100, 100) // x, y, width, height
 }
-
+function checkCollisionSpeed(velX, velY, platform) {
+    return (player.y - velY + player.height >= platform.y &&
+    player.y - velY <= platform.y + platform.height &&
+    player.x + velX + player.width >= platform.x &&
+    player.x + velX <= platform.x + platform.width)
+}
 function checkCollision(platform) {
     return (player.y + player.height >= platform.y &&
             player.y <= platform.y + platform.height &&
@@ -156,10 +161,10 @@ function checkCollision(platform) {
             player.x <= platform.x + platform.width);
 } function hitBox(Collision, platform) {
     if (Collision) {
-        if (player.y <= platform.y - player.height + 12) {
+        if (player.y <= platform.y - player.height + 0) { // +0 somehow
             player.y = platform.y - player.height
         }
-        if (player.x <= platform.x - player.width + 20) {
+        if (player.x <= platform.x - player.width + 0) {
             player.x = platform.x - player.width
         }
 }} function createPlatform(x, y, width, height) {
@@ -172,7 +177,7 @@ function checkCollision(platform) {
 } function renderPlatform(platform) {
     ctx.fillStyle = "#404040";
     ctx.fillRect(platform.x,platform.y,platform.width,platform.height); 
-    hitBox(checkCollision(platform), platform)
+    // hitBox(checkCollision(platform), platform)
 }
 
     function update() {
@@ -330,6 +335,33 @@ function checkCollision(platform) {
                 direction = "Left";
         }}
 
+        while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
+            if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+            else {
+                for (i=0;i<100;i++) {
+                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    velX-=0.2
+                } if (i == 100) { velX += 20 }
+                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+                for (i=0;i<100;i++) {
+                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    velY-=0.2
+                } if (i == 100) { velY += 20 }
+                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+                for (i=0;i<100;i++) {
+                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    velX+=0.2
+                } if (i == 100) { velX -= 20 }
+                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+                for (i=0;i<100;i++) {
+                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    velY+=0.1
+                } if (i == 100) { velY -= 20 }
+                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+        }}
+        console.log(keys.Space)
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(player.x, player.y, player.width, player.height);
         // apply some friction to y velocity
         player.y -= velY;
         velY *= friction;
@@ -349,8 +381,6 @@ function checkCollision(platform) {
             player.y = canvas.height-player.height;
         }
 
-        ctx.fillStyle = "#000000";
-        ctx.fillRect(player.x, player.y, player.width, player.height);
     }}
 keys = {
     "KeyA": false,
