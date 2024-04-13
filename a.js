@@ -145,7 +145,9 @@ var velY = 0,
     speed = 3, // max speed
     friction = 0.93, // friction
     direction = "Right",
-    jumpMultiplier = 0
+    jumpMultiplier = 0,
+    dashTimer = 0,
+    dashController = false
 ;
 
 // !movement; sprite
@@ -305,17 +307,19 @@ function update() {
     if (player.stamina < player.mstamina) {
         player.stamina += player.mstamina*0.0025;
     }
-    if (keys.ControlLeft && player.stamina > 20 && velX > -3 && velX < 3) {
+    if (dashController) {
+        dashTimer++
+        if (dashTimer == 30) { dashController = false; dashTimer = 0 } // dashtimer determines how many frames the player has to wait between each dash
+    }
+    if (dashTimer == 0 && keys.ControlLeft && player.stamina > 20) {
         if (direction == "Right") {
-            velX = 20;
+            velX = 25;
         } else if (direction == "Left") {
-            velX = -20;
+            velX = -25;
         }
-        if (velX == 20) {
-            player.stamina -= 20;
-        } else if (velX == -20) {
-            player.stamina -= 20;
-    }}
+        dashController = true
+        player.stamina -= 35;
+    }
     if ((player.y <= canvas.height-player.height && player.y >= canvas.height - player.height - 1) || checkCollision(velX, -1, platforms["platform"+0]) || checkCollision(velX, -1, platforms["platform"+1])) { // easier way to control all platforms later
         if (keys.Space) { velY = 14 }
         jumpMultiplier = 0
@@ -331,19 +335,19 @@ function update() {
     }}
     if (keys.KeyD) {
         if (velX < speed) {
-            velX+=2;
+            velX+=3.5;
             direction = "Right";
     }}
     if (keys.KeyA) {
         if (velX > -speed) {
-            velX-=2;
+            velX-=3.5;
             direction = "Left";
     }}
     let velX2 = velX,
         velY2 = velY;
 
-    for (j=0;j<2;j++) { // bigger for loop for all platforms
-        if (platforms["platform"+j].x < 0 || platforms["platform"+j].x > canvas.width) { } // <= idk if this works, i still only have 1 item in platforms
+    for (j=0;j<2;j++) { // bigger 'for' loop for all platforms
+        if (platforms["platform"+j].x < 0 || platforms["platform"+j].x > canvas.width) { console.log(`${platforms["platform"+j]} is out of bounds and will not be rendered`)} // <= idk if this works, i still only have 1 item in platforms
         else {while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
             if (!checkCollision(velX, velY, platforms["platform"+j])) { break } 
             else { // also only run this if the platform is within the canvas borders (otherwise the game will lag)
@@ -370,10 +374,9 @@ function update() {
             }}
     
             if (checkCollision(0,-1,platforms["platform"+j])) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to, sometimes it works without it idk y
-            if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { moveSurroundings(velX, platforms["platform"+j]) } // for bigger maps, no friction on platforms
+
     }}
-    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { velX = 0 } // platform 0 because im determining the players position using the first platforms location
-    
+    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 200) { moveSurroundings(velX, platforms["platform"+0]); moveSurroundings(velX, platforms["platform"+1]); velX = 0 } // for bigger maps, no friction on platforms, when velX on player = 0 then dash cost infinite stamina
     ctx.fillStyle = "#000000";
     ctx.fillRect(player.x, player.y, player.width, player.height);
     // replace with:
