@@ -82,7 +82,7 @@ function startGame() {
 function selectEnemy() {
     // determines what enemy will spawn depending on where the player is located + other stuff maybe
 }
-function enemySpawn(player) {
+function enemySpawn(player) { // might delete these and have set values instead of random spawns
     let enemy = {
         type: ["Zombie"],
         hp: undefined,
@@ -99,6 +99,15 @@ function enemySpawn(player) {
         monster.str;
     };
     monster.hp = monster.mhp
+}
+
+function renderRat(rat) {
+    ctx.fillStyle = "#f00";
+    ctx.fillRect(rat.x,rat.y,rat.width,rat.height); 
+} 
+
+let rats = {
+    rat0: createPlatform(1200, canvas.height-20, 30, 20) // x, y
 }
 
 function chest(player) {
@@ -193,7 +202,6 @@ function checkCollision(velX, velY, platform) {
 } function renderPlatform(platform) {
     ctx.fillStyle = "#404040";
     ctx.fillRect(platform.x,platform.y,platform.width,platform.height); 
-    // hitBox(checkCollision(platform), platform)
 } 
 
 // !overdone platform bs; animation
@@ -376,7 +384,7 @@ function update() {
             if (checkCollision(0,-1,platforms["platform"+j])) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to, sometimes it works without it idk y
 
     }}
-    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 200) { moveSurroundings(velX, platforms["platform"+0]); moveSurroundings(velX, platforms["platform"+1]); velX = 0 } // for bigger maps, no friction on platforms, when velX on player = 0 then dash cost infinite stamina
+    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 200) { moveSurroundings(velX, platforms["platform"+0]); moveSurroundings(velX, platforms["platform"+1]); moveSurroundings(velX, rats["rat"+0]); velX = 0 } // for bigger maps, no friction on platforms, when velX on player = 0 then dash cost infinite stamina
     ctx.fillStyle = "#000000";
     ctx.fillRect(player.x, player.y, player.width, player.height);
     // replace with:
@@ -392,10 +400,23 @@ function update() {
     velX *= friction;
 
     for (i=0;i<2;i++) { // 2 = max number platform +1, we have platform 0 and 1 rn
-        renderPlatform(platforms["platform"+i])
-    } // i dont remember if i can put this in the other one or if it needs to be after player location update so ill b safe and keep it here
+        if (platforms["platform"+i].x + platforms["platform"+i].width > 0 && platforms["platform"+i].x < canvas.width) {
+            renderPlatform(platforms["platform"+i])
+    }} 
+    for (i=0;i<1;i++) { // 2 = max number platform +1, we have platform 0 and 1 rn
+        if (rats["rat"+i].x + rats["rat"+i].width > 0 && rats["rat"+i].x < canvas.width) {
+            renderRat(rats["rat"+i])
+    }}
 
-    // bounds checking
+    // rat detection system
+
+    if (player.x > rats.rat0.x - 150 && player.x < rats.rat0.x + 150) {
+        if (player.x < rats.rat0.x) {rats.rat0.x += 5}
+        else {rats.rat0.x -= 5}
+    }
+
+
+    // !rat detection system; bounds checking
     if (player.x > canvas.width-player.width) {
         player.x = canvas.width-player.width;
     } else if (player.x < 0) {
