@@ -244,7 +244,7 @@ function update() {
     }
                 
     if (keys.Escape) { // idk how ths works
-        pause();
+        drawMenu();
     }
     if ((keys.ShiftLeft && keys.leftClick) || (keys.ShiftRight && keys.leftClick) || attackCharge > 0){
         keys.Space = false;
@@ -331,6 +331,12 @@ function update() {
     }}
     let velX2 = velX,
         velY2 = velY;
+    
+    for (i=0;i<platforms.length;i++) {
+        if (platforms["platform"+i].x < 0 || platforms["platform"+i].x > canvas.width) { i = platforms.length + 1 } // <= idk if this works, i still only have 1 item in platforms
+        else {} // run "while (true)" thing beneath
+    }
+
     while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
         if (!checkCollision(velX, velY, platforms.platform0)) { break } 
         else { // also only run this if the platform is within the canvas borders (otherwise the game will lag)
@@ -354,15 +360,14 @@ function update() {
                 velX-=0.2
             } if (i == 100) { velX = velX2 }
             if (!checkCollision(velX, velY, platforms.platform0)) { break }
-    }}
-    if (checkCollision(0,-1,platforms.platform0)) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to
+    }} if (checkCollision(0,-1,platforms.platform0)) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to
     
     ctx.fillStyle = "#000000";
     ctx.fillRect(player.x, player.y, player.width, player.height);
     // replace with:
     ctx.drawImage(playerImage, sprite.frameX * sprite.width, sprite.frameY * sprite.height, sprite.width, sprite.height, player.x, player.y, player.width, player.height)
     
-    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { moveSurroundings(velX*friction, platforms.platform0); velX = 0 } // for bigger maps
+    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { moveSurroundings(velX, platforms.platform0); velX = 0 } // for bigger maps
 
     // apply some friction to y velocity
     player.y -= velY;
@@ -417,10 +422,4 @@ document.body.addEventListener("mouseup", function (e) {
 
 // !fighting !animation
 
-function pause() {
-    ctx.clearRect(0,0,canvas.width,canvas.height)
-    ctx.fillStyle = "#000"; // idk how dis works tbhh
-    ctx.fillRect(0,0,1080,1080);
-}
-
-drawMenu(); // idk where its supposed 2 b tbh
+drawMenu(); 
