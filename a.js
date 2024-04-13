@@ -171,7 +171,8 @@ function text(sentence) {
 // !sprite; overdone platform bs
 
 let platforms = {
-    platform0: createPlatform(600, canvas.height-100, 100, 100) // x, y, width, height
+    platform0: createPlatform(600, canvas.height-50, 150, 50), // x, y, width, height
+    platform1: createPlatform(800, canvas.height-80, 100, 80),
 } 
 function checkCollision(velX, velY, platform) {
     return (player.y - velY + player.height >= platform.y &&
@@ -304,10 +305,10 @@ function update() {
     if (player.stamina < player.mstamina) {
         player.stamina += player.mstamina*0.0025;
     }
-    if (keys.ControlLeft && player.stamina > 20) {
-        if (direction == "Right" && velX <= 3 && velX >= 0) {
+    if (keys.ControlLeft && player.stamina > 20 && velX > -3 && velX < 3) {
+        if (direction == "Right") {
             velX = 20;
-        } else if (direction == "Left" && velX >= -3 && velX <= 0) {
+        } else if (direction == "Left") {
             velX = -20;
         }
         if (velX == 20) {
@@ -315,11 +316,11 @@ function update() {
         } else if (velX == -20) {
             player.stamina -= 20;
     }}
-    if ((player.y <= canvas.height-player.height && player.y >= canvas.height - player.height - 1) || checkCollision(velX, -1, platforms.platform0)) { // easier way to control all platforms later
+    if ((player.y <= canvas.height-player.height && player.y >= canvas.height - player.height - 1) || checkCollision(velX, -1, platforms["platform"+0]) || checkCollision(velX, -1, platforms["platform"+1])) { // easier way to control all platforms later
         if (keys.Space) { velY = 14 }
         jumpMultiplier = 0
     }
-    if (player.y < canvas.height - player.height && !checkCollision(0, -0.2, platforms.platform0) && !keys.Space) {
+    if (player.y < canvas.height - player.height && !checkCollision(0, -0.2, platforms["platform"+0]) && !checkCollision(0, -0.2, platforms["platform"+1]) && !keys.Space) { // for loop inside () idk how to do that yet
         velY--
     }
     if (keys.Space) {
@@ -340,43 +341,44 @@ function update() {
     }}
     let velX2 = velX,
         velY2 = velY;
-    
-    for (i=0;i<platforms.length;i++) {
-        if (platforms["platform"+i].x < 0 || platforms["platform"+i].x > canvas.width) { i = platforms.length + 1 } // <= idk if this works, i still only have 1 item in platforms
-        else {} // run "while (true)" thing beneath
-    }
 
-    while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
-        if (!checkCollision(velX, velY, platforms.platform0)) { break } 
-        else { // also only run this if the platform is within the canvas borders (otherwise the game will lag)
-            for (i=0;i<100;i++) {
-                if (!checkCollision(0, velY, platforms.platform0)) { i = 201 }
-                velY-=0.2
-            } if (i == 100) { velY = velY2 }
-            if (!checkCollision(velX, velY, platforms.platform0)) { break }
-            for (i=0;i<100;i++) {
-                if (!checkCollision(velX, 0, platforms.platform0)) { i = 201 }
-                velX+=0.2
-            } if (i == 100) { velX = velX2 }
-            if (!checkCollision(velX, velY, platforms.platform0)) { break }
-            for (i=0;i<100;i++) {
-                if (!checkCollision(0, velY, platforms.platform0)) { i = 201 }
-                velY+=0.2
-            } if (i == 100) { velY = velY2 }
-            if (!checkCollision(velX, velY, platforms.platform0)) { break }
-            for (i=0;i<100;i++) {
-                if (!checkCollision(velX, 0, platforms.platform0)) { i = 201 }
-                velX-=0.2
-            } if (i == 100) { velX = velX2 }
-            if (!checkCollision(velX, velY, platforms.platform0)) { break }
-    }} if (checkCollision(0,-1,platforms.platform0)) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to
+    for (j=0;j<2;j++) { // bigger for loop for all platforms
+        if (platforms["platform"+j].x < 0 || platforms["platform"+j].x > canvas.width) { } // <= idk if this works, i still only have 1 item in platforms
+        else {while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
+            if (!checkCollision(velX, velY, platforms["platform"+j])) { break } 
+            else { // also only run this if the platform is within the canvas borders (otherwise the game will lag)
+                for (i=0;i<100;i++) {
+                    if (!checkCollision(0, velY, platforms["platform"+j])) { i = 201 }
+                    velY-=0.2
+                } if (i == 100) { velY = velY2 }
+                if (!checkCollision(velX, velY, platforms["platform"+j])) { break }
+                for (i=0;i<100;i++) {
+                    if (!checkCollision(velX, 0, platforms["platform"+j])) { i = 201 }
+                    velX+=0.2
+                } if (i == 100) { velX = velX2 }
+                if (!checkCollision(velX, velY, platforms["platform"+j])) { break }
+                for (i=0;i<100;i++) {
+                    if (!checkCollision(0, velY, platforms["platform"+j])) { i = 201 }
+                    velY+=0.2
+                } if (i == 100) { velY = velY2 }
+                if (!checkCollision(velX, velY, platforms["platform"+j])) { break }
+                for (i=0;i<100;i++) {
+                    if (!checkCollision(velX, 0, platforms["platform"+j])) { i = 201 }
+                    velX-=0.2
+                } if (i == 100) { velX = velX2 }
+                if (!checkCollision(velX, velY, platforms["platform"+j])) { break }
+            }}
+    
+            if (checkCollision(0,-1,platforms["platform"+j])) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to, sometimes it works without it idk y
+            if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { moveSurroundings(velX, platforms["platform"+j]) } // for bigger maps
+    }}
+    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { velX = 0 } // platform 0 because im determining the players position using the first platforms location
     
     ctx.fillStyle = "#000000";
     ctx.fillRect(player.x, player.y, player.width, player.height);
     // replace with:
     ctx.drawImage(playerImage, sprite.frameX * sprite.width, sprite.frameY * sprite.height, sprite.width, sprite.height, player.x, player.y, player.width, player.height)
     
-    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { moveSurroundings(velX, platforms.platform0); velX = 0 } // for bigger maps
 
     // apply some friction to y velocity
     player.y -= velY;
@@ -386,7 +388,9 @@ function update() {
     player.x += velX;
     velX *= friction;
 
-    renderPlatform(platforms.platform0)
+    for (i=0;i<2;i++) { // 2 = max number platform +1, we have platform 0 and 1 rn
+        renderPlatform(platforms["platform"+i])
+    } // i dont remember if i can put this in the other one or if it needs to be after player location update so ill b safe and keep it here
 
     // bounds checking
     if (player.x > canvas.width-player.width) {
