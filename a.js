@@ -255,12 +255,12 @@ function moveSurroundings(velX, platform) {
         if (keys.Escape) { // idk how ths works
             pause();
         }
-        if(keys.leftClick){
+        if ((keys.ShiftLeft && keys.leftClick) || (keys.ShiftRight && keys.leftClick) || attackCharge > 0){
             keys.Space = false;
             keys.KeyA = false;
             keys.KeyD = false;
             keys.ControlLeft = false;
-            if (attackCharge < 50) {
+            if (attackCharge < 50 && ((keys.ShiftLeft && keys.leftClick) || (keys.ShiftRight && keys.leftClick))) {
                 attackCharge++;
             }
             if (attackCharge >= 20 && attackCharge < 50) {
@@ -275,7 +275,7 @@ function moveSurroundings(velX, platform) {
             }
             console.log(attackCharge);
         }
-        if (!keys.leftClick) {
+        if (!keys.leftClick || (!keys.ShiftRight && !keys.ShiftLeft)) {
             if (attackCharge > 0 && attackCharge < 15) {
                 if (player.stamina > 10) {
                     player.stamina-=10
@@ -341,8 +341,8 @@ function moveSurroundings(velX, platform) {
         let velX2 = velX,
             velY2 = velY;
         while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
-            if (!checkCollision(velX, velY, platforms.platform0)) { break }
-            else {
+            if (!checkCollision(velX, velY, platforms.platform0)) { break } 
+            else { // also only run this if the platform is within the canvas borders (otherwise the game will lag)
                 for (i=0;i<100;i++) {
                     if (!checkCollision(0, velY, platforms.platform0)) { i = 201 }
                     velY-=0.2
@@ -371,7 +371,7 @@ function moveSurroundings(velX, platform) {
         // replace with:
         ctx.drawImage(playerImage, sprite.frameX * sprite.width, sprite.frameY * sprite.height, sprite.width, sprite.height, player.x, player.y, player.width, player.height)
         
-        if ((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) { moveSurroundings(velX, platforms.platform0); velX = 0 } // for bigger maps
+        if ((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) { moveSurroundings(velX*friction, platforms.platform0); velX = 0 } // for bigger maps
 
         // apply some friction to y velocity
         player.y -= velY;
@@ -382,7 +382,6 @@ function moveSurroundings(velX, platform) {
         velX *= friction;
 
         renderPlatform(platforms.platform0)
-
 
         // bounds checking
         if (player.x > canvas.width-player.width) {
@@ -400,6 +399,8 @@ keys = {
     "ControlLeft": false,
     "Escape": false,
     "leftClick": false,
+    "ShiftLeft": false, 
+    "ShiftRight": false, 
 }
 // key events
 document.body.addEventListener("keydown", function (e) {
