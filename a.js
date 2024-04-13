@@ -22,6 +22,7 @@ let player = {
     height: 50, // player.width * sprite.height / sprite.width
     width: 50, // set value
 };    
+player.mxp = 9+player.lvl**2;
 
 function drawMenu() {
     ctx.fillStyle = "#f0f0f0";
@@ -73,12 +74,14 @@ function startGame() {
     drawMenu(); // Redraw the menu to disable the button
 
     // Call your main() function here, or include its logic directly
-    player.mxp = 9+player.lvl**2;
     startAnimating(60)
 }
 
-// !main menu 
+// !main menu; general map
 
+function selectEnemy() {
+    // determines what enemy will spawn depending on where the player is located + other stuff maybe
+}
 function enemySpawn(player) {
     let enemy = {
         type: ["Zombie"],
@@ -86,7 +89,7 @@ function enemySpawn(player) {
         mhp: undefined,
         str: undefined
     };
-    monsterName = enemy.type(select());
+    monsterName = enemy.type(selectEnemy());
     if (monsterName === "Zombie") {    
         monster.mhp = 9 + player.lvl;
         monster.str = player.lvl;
@@ -112,21 +115,27 @@ function chest(player) {
     player.inventory.append(item.name, item.lvl)
 }
 
-function select() { // will spawn enemies depending on the coordinates when i have a map
-    if (true) {
-        return null
-}}
+// !general map
 
-function leveling(player) {
-    while (player.xp >= player.mxp) {
-        if (player.lvl == 50) {
-            return player.xp = player.mxp
+let toggle = true
+function leveling(toggle, player) {
+    while (player.xp >= player.mxp && toggle) {
+        if (player.lvl == 9) {
+            return player.mxp = 0, 
+            toggle = false,
+            player.lvl += 1,
+            player.mhp += 5,
+            player.hp = player.mhp,
+            player.skillpoint += 1,
+            player.xp -= player.mxp
         }
-        player.lvl += 1;
-        player.mhp += 5
-        player.hp = player.mhp
-        player.skillpoint += 1
+        return player.lvl += 1,
+        player.mhp += 5,
+        player.hp = player.mhp,
+        player.skillpoint += 1,
         player.xp -= player.mxp
+
+
 }}
 
 //movement
@@ -139,7 +148,7 @@ var velY = 0,
     jumpMultiplier = 0
 ;
 
-// sprite
+// !movement; sprite
 
 // https://www.youtube.com/watch?v=CY0HE277IBM
 
@@ -149,7 +158,7 @@ playerImage.src = ""
 let sprite = {
     width: 0, //imagewidth / amount of images     imagewidth / sprite width = amount of sprites
     height: 0, // same except height
-    frameY: 0, // this will determine what kind of animation with be displayed
+    frameY: 0, // this will determine what kind of animation will be displayed
     frameX: 0, // this will determine which part of the animation thats being played that the player is on
 }
 
@@ -227,7 +236,7 @@ function update() {
     ctx.fillText(`${player.hp}/${player.mhp}`, 220, 30);
 
     if (player.xp >= player.mxp) {
-        leveling(player);
+        leveling(toggle, player);
         player.mxp = 9+player.lvl**2;
     };
     if (false) { // chest function
