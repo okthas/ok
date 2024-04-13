@@ -166,17 +166,14 @@ function text(sentence) {
 let platforms = {
     platform0: createPlatform(600, canvas.height-100, 100, 100) // x, y, width, height
 }
-function checkCollisionSpeed(velX, velY, platform) {
+function checkCollision(velX, velY, platform) {
     return (player.y - velY + player.height >= platform.y &&
     player.y - velY <= platform.y + platform.height &&
     player.x + velX + player.width >= platform.x &&
     player.x + velX <= platform.x + platform.width)
 }
-function checkCollision(platform) {
-    return (player.y + player.height >= platform.y &&
-            player.y <= platform.y + platform.height &&
-            player.x + player.width >= platform.x &&
-            player.x <= platform.x + platform.width);
+function moveSurroundings(velX, platform) {
+    return platform.x -= velX
 } function hitBox(Collision, platform) {
     if (Collision) {
         if (player.y <= platform.y - player.height + 0) { // +0 somehow
@@ -318,66 +315,64 @@ function checkCollision(platform) {
             } else if (velX == -20) {
                 player.stamina -= 20;
         }}
-        if ((player.y <= canvas.height-player.height && player.y >= canvas.height - player.height - 1) || checkCollisionSpeed(velX, -1, platforms.platform0)) { // easier way to control all platforms later
+        if ((player.y <= canvas.height-player.height && player.y >= canvas.height - player.height - 1) || checkCollision(velX, -1, platforms.platform0)) { // easier way to control all platforms later
             if (keys.Space) { velY = 14 }
             jumpMultiplier = 0
         }
-        if (player.y < canvas.height - player.height && !checkCollision(platforms.platform0) && !keys.Space) {
+        if (player.y < canvas.height - player.height && !checkCollision(0, -0.2, platforms.platform0) && !keys.Space) {
             velY-=0.8
         }
         if (keys.Space) {
-            if (jumpMultiplier >= 50) { velY-- }
+            if (jumpMultiplier >= 50 || velY < 0) { velY-- }
             else {            
                 velY -= 0.03
                 jumpMultiplier++
         }}
         if (keys.KeyD) {
             if (velX < speed) {
-                velX++;
+                velX+=2;
                 direction = "Right";
         }}
         if (keys.KeyA) {
             if (velX > -speed) {
-                velX--;
+                velX-=2;
                 direction = "Left";
         }}
         let velX2 = velX,
             velY2 = velY;
         while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
-            if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+            if (!checkCollision(velX, velY, platforms.platform0)) { break }
             else {
                 for (i=0;i<100;i++) {
-                    velX = 0
-                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    if (!checkCollision(0, velY, platforms.platform0)) { i = 201 }
                     velY-=0.2
-                } if (i == 100) { velY = velY2; velX = velX2 }
-                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+                } if (i == 100) { velY = velY2 }
+                if (!checkCollision(velX, velY, platforms.platform0)) { break }
                 for (i=0;i<100;i++) {
-                    velY = 0
-                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    if (!checkCollision(velX, 0, platforms.platform0)) { i = 201 }
                     velX+=0.2
-                } if (i == 100) { velX = velX2; velY = velY2 }
-                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+                } if (i == 100) { velX = velX2 }
+                if (!checkCollision(velX, velY, platforms.platform0)) { break }
                 for (i=0;i<100;i++) {
-                    velX = 0
-                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    if (!checkCollision(0, velY, platforms.platform0)) { i = 201 }
                     velY+=0.2
-                } if (i == 100) { velY = velY2; velX = velX2 }
-                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+                } if (i == 100) { velY = velY2 }
+                if (!checkCollision(velX, velY, platforms.platform0)) { break }
                 for (i=0;i<100;i++) {
-                    velY = 0
-                    if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { i = 201 }
+                    if (!checkCollision(velX, 0, platforms.platform0)) { i = 201 }
                     velX-=0.2
-                } if (i == 100) { velX = velX2; velY = velY2 }
-                if (!checkCollisionSpeed(velX, velY, platforms.platform0)) { break }
+                } if (i == 100) { velX = velX2 }
+                if (!checkCollision(velX, velY, platforms.platform0)) { break }
         }}
-        if (checkCollisionSpeed(0,-1,platforms.platform0)) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to
+        if (checkCollision(0,-1,platforms.platform0)) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to
         
         ctx.fillStyle = "#000000";
         ctx.fillRect(player.x, player.y, player.width, player.height);
         // replace with:
         ctx.drawImage(playerImage, sprite.frameX * sprite.width, sprite.frameY * sprite.height, sprite.width, sprite.height, player.x, player.y, player.width, player.height)
         
+        if ((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) { moveSurroundings(velX, platforms.platform0); velX = 0 } // for bigger maps
+
         // apply some friction to y velocity
         player.y -= velY;
         velY *= friction;
@@ -387,6 +382,7 @@ function checkCollision(platform) {
         velX *= friction;
 
         renderPlatform(platforms.platform0)
+
 
         // bounds checking
         if (player.x > canvas.width-player.width) {
