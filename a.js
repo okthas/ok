@@ -172,7 +172,7 @@ function text(sentence) {
 
 let platforms = {
     platform0: createPlatform(600, canvas.height-50, 150, 50), // x, y, width, height
-    platform1: createPlatform(800, canvas.height-80, 100, 80),
+    platform1: createPlatform(820, canvas.height-80, 100, 80),
 } 
 function checkCollision(velX, velY, platform) {
     return (player.y - velY + player.height >= platform.y &&
@@ -370,7 +370,7 @@ function update() {
             }}
     
             if (checkCollision(0,-1,platforms["platform"+j])) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to, sometimes it works without it idk y
-            if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { moveSurroundings(velX, platforms["platform"+j]) } // for bigger maps
+            if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { moveSurroundings(velX, platforms["platform"+j]) } // for bigger maps, no friction on platforms
     }}
     if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 300) { velX = 0 } // platform 0 because im determining the players position using the first platforms location
     
