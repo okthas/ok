@@ -107,7 +107,7 @@ function renderRat(rat) {
 } 
 
 let rats = {
-    rat0: createPlatform(1200, canvas.height-20, 30, 20) // x, y
+    rat0: createPlatform(1700, canvas.height-20, 30, 20) // x, y
 }
 
 function chest(player) {
@@ -156,7 +156,8 @@ var velY = 0,
     direction = "Right",
     jumpMultiplier = 0,
     dashTimer = 0,
-    dashController = false
+    dashController = false,
+    ratRunToggle = false
 ;
 
 // !movement; sprite
@@ -319,14 +320,14 @@ function update() {
         dashTimer++
         if (dashTimer == 30) { dashController = false; dashTimer = 0 } // dashtimer determines how many frames the player has to wait between each dash
     }
-    if (dashTimer == 0 && keys.ControlLeft && player.stamina > 20) {
+    if (dashTimer == 0 && keys.ControlLeft && player.stamina > 30) {
         if (direction == "Right") {
-            velX = 25;
+            velX = 20;
         } else if (direction == "Left") {
-            velX = -25;
+            velX = -20;
         }
         dashController = true
-        player.stamina -= 35;
+        player.stamina -= 30;
     }
     if ((player.y <= canvas.height-player.height && player.y >= canvas.height - player.height - 1) || checkCollision(velX, -1, platforms["platform"+0]) || checkCollision(velX, -1, platforms["platform"+1])) { // easier way to control all platforms later
         if (keys.Space) { velY = 14 }
@@ -343,12 +344,12 @@ function update() {
     }}
     if (keys.KeyD) {
         if (velX < speed) {
-            velX+=3.5;
+            velX+=2;
             direction = "Right";
     }}
     if (keys.KeyA) {
         if (velX > -speed) {
-            velX-=3.5;
+            velX-=2;
             direction = "Left";
     }}
     let velX2 = velX,
@@ -384,7 +385,14 @@ function update() {
             if (checkCollision(0,-1,platforms["platform"+j])) { velX-=0.2 } // counteract gliding (caused by who knows what) so now the platform works exactly how i need it to, sometimes it works without it idk y
 
     }}
-    if (((player.x > 800 && velX > 0) || (player.x < 400 && velX < 0)) && player.x > platforms.platform0.x - 200) { moveSurroundings(velX, platforms["platform"+0]); moveSurroundings(velX, platforms["platform"+1]); moveSurroundings(velX, rats["rat"+0]); velX = 0 } // for bigger maps, no friction on platforms, when velX on player = 0 then dash cost infinite stamina
+    let g = true
+    if (((player.x > canvas.width/1.7 && velX > 0) || (player.x < canvas.width/3 && velX < 0)) && player.x > platforms.platform0.x - 200) { 
+        moveSurroundings(velX, platforms["platform"+0])
+        moveSurroundings(velX, platforms["platform"+1])
+        moveSurroundings(velX, rats["rat"+0])
+        g = false
+        velX *= friction 
+    } // for bigger maps, no friction on platforms, when velX on player = 0 then dash cost infinite stamina
     ctx.fillStyle = "#000000";
     ctx.fillRect(player.x, player.y, player.width, player.height);
     // replace with:
@@ -393,12 +401,11 @@ function update() {
 
     // apply some friction to y velocity
     player.y -= velY;
-    velY *= friction;
+    velY *= friction; 
 
     // apply some friction to x velocity
-    player.x += velX;
-    velX *= friction;
-
+    if (g) {player.x += velX; velX *= friction}
+    
     for (i=0;i<2;i++) { // 2 = max number platform +1, we have platform 0 and 1 rn
         if (platforms["platform"+i].x + platforms["platform"+i].width > 0 && platforms["platform"+i].x < canvas.width) {
             renderPlatform(platforms["platform"+i])
@@ -409,14 +416,16 @@ function update() {
     }}
 
     // rat detection system
-
-    if (player.x > rats.rat0.x - 150 && player.x < rats.rat0.x + 150) {
-        if (player.x < rats.rat0.x) {rats.rat0.x += 5}
-        else {rats.rat0.x -= 5}
+    
+    if (((player.x > rats.rat0.x - 80 && player.x < rats.rat0.x + 80) || ratRunToggle) || ((keys.Space && player.x > rats.rat0.x - 280 && player.x < rats.rat0.x + 280) || ratRunToggle)) {
+        ratRunToggle = true
+        if (rats.rat0.x > canvas.width) {rats.rat0.y = -500} // if the mouse is out of bounds then it escaped succesfully from the player
+        if (player.x < rats.rat0.x) {rats.rat0.x += 6.5}
+        else {rats.rat0.x -= 6.5}
     }
 
-
     // !rat detection system; bounds checking
+
     if (player.x > canvas.width-player.width) {
         player.x = canvas.width-player.width;
     } else if (player.x < 0) {
