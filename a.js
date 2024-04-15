@@ -16,7 +16,7 @@ let player = {
     mxp: undefined,
     skillpoint: 0,
     x: 300,
-    y: canvas.height-50, // 50 = player.side
+    y: canvas.height-50, // 50 = player.height
     stamina: 100,
     mstamina: 100,
     height: 50, // player.width * sprite.height / sprite.width
