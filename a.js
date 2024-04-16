@@ -24,19 +24,26 @@ let player = {
 };    
 player.mxp = 9+player.lvl**2;
 
-function drawMenu() {
-    ctx.fillStyle = "#f0f0f0";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+function drawMenu(menu) {
+    if (menu) { // pause menu
+        ctx.font = "100px Arial";
+        ctx.fillStyle = "#333";
+        ctx.fillText("settings", canvas.width / 4 + 30, 150);
 
-    ctx.font = "100px Arial";
-    ctx.fillStyle = "#333";
-    ctx.fillText("CAT", canvas.width / 4 + 30, 150);
+        drawButton(canvas.width / 4 + 50, canvas.height / 2, 200, 70, "", undefined, true, "#00f");
+    } else {
+        ctx.fillStyle = "#f0f0f0";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawButton(canvas.width / 4 + 50, canvas.height / 2, 400, 100, "", startGame, !gameStarted);
-}
+        ctx.font = "100px Arial";
+        ctx.fillStyle = "#333";
+        ctx.fillText("CAT", canvas.width / 4 + 30, 150);
 
-function drawButton(x, y, width, height, text, onClick, enabled) {
-    ctx.fillStyle = enabled ? "#333" : "#ccc"; // different color for disabled button
+        drawButton(canvas.width / 4 + 50, canvas.height / 2, 400, 100, "", startGame, !gameStarted, "#333");
+}}
+
+function drawButton(x, y, width, height, text, onClick, enabled, color) {
+    ctx.fillStyle = enabled ? color : "#000"; // different color for disabled button
     ctx.fillRect(x, y, width, height);
 
     ctx.font = "70px Arial";
@@ -158,7 +165,9 @@ var velY = 0,
     dashTimer = 0,
     dashController = false,
     ratRunToggle = false,
-    sound = 0
+    sound = 0,
+    menu = false,
+    pressCounter = 0
 ;
 
 // !movement; sprite
@@ -212,6 +221,16 @@ function update() {
         
     // request another frame
 
+    if (pressCounter > 0) {
+        pressCounter++
+        if (pressCounter == 60) {pressCounter = 0}
+    }  
+    console.log(pressCounter)
+    if (keys.Escape && pressCounter == 0) { // idk how ths works
+        if (!menu) {menu = true; drawMenu(menu)} else {menu = false}
+        pressCounter = 1
+    }
+
     requestAnimationFrame(update);
 
     // calc elapsed time since last loop
@@ -221,7 +240,7 @@ function update() {
 
     // if enough time has elapsed, draw the next frame
 
-    if (elapsed > fpsInterval) {
+    if (elapsed > fpsInterval && !menu) {
 
         // Get ready for next frame by setting then=now, but also adjust for your
         // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
@@ -264,10 +283,7 @@ function update() {
         ctx.fillText("Game Over!", canvas.width / 4, canvas.height / 2 - 50);
         return null;
     }
-                
-    if (keys.Escape) { // idk how ths works
-        drawMenu();
-    }
+    
     if ((keys.ShiftLeft && keys.leftClick) || (keys.ShiftRight && keys.leftClick) || attackCharge > 0){
         keys.Space = false;
         keys.KeyA = false;
