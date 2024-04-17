@@ -40,7 +40,7 @@ function screen() {
     drawButton(canvas.width / 5 + canvas.width/18, canvas.height/1.8, canvas.width/9, canvas.height/7, "-", reduceScreenSize, true, "#00f", "#fff");
     ctx.font = `${canvas.width/22.5}px Arial`;
     ctx.fillStyle = "#333";
-    ctx.fillText(`height: ${canvas.height}, width: ${canvas.width}`, 30, 150);
+    ctx.fillText(`height: ${canvas.height}, width: ${canvas.width}`, canvas.width/30, canvas.height/3.3);
 }
 
 function drawMenu(menu) {
