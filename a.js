@@ -23,6 +23,15 @@ let player = {
     width: 50, // set value
 };    
 player.mxp = 9+player.lvl**2;
+function increaseScreenSize() {return canvas.height*=1.2, canvas.width*=1.2}; function reduceScreenSize() {return canvas.height/=1.2, canvas.width/=1.2}
+function screen() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawButton(canvas.width / 5 + 50, 200, 400, 70, "+", increaseScreenSize, true, "#00f", "#fff");
+    drawButton(canvas.width / 5 + 50, 300, 400, 70, "-", reduceScreenSize, true, "#00f", "#fff");
+    ctx.font = "50px Arial";
+    ctx.fillStyle = "#333";
+    ctx.fillText(`height: ${canvas.height}, width: ${canvas.width}`, 30, 150);
+}
 
 function drawMenu(menu) {
     if (menu) { // pause menu
@@ -30,7 +39,9 @@ function drawMenu(menu) {
         ctx.fillStyle = "#333";
         ctx.fillText("settings", canvas.width / 4 + 30, 150);
 
-        drawButton(canvas.width / 4 + 50, canvas.height / 2, 200, 70, "", undefined, true, "#00f");
+        drawButton(canvas.width / 5 + 50, 200, 400, 70, "screensize", screen, true, "#00f", "#fff");
+        drawButton(canvas.width / 5 + 50, 300, 400, 70, "gameplay", undefined, true, "#00f", "#fff");
+        drawButton(canvas.width / 5 + 50, 400, 400, 70, "???", undefined, true, "#00f", "#fff");
     } else {
         ctx.fillStyle = "#f0f0f0";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -39,16 +50,16 @@ function drawMenu(menu) {
         ctx.fillStyle = "#333";
         ctx.fillText("CAT", canvas.width / 4 + 30, 150);
 
-        drawButton(canvas.width / 4 + 50, canvas.height / 2, 400, 100, "", startGame, !gameStarted, "#333");
+        drawButton(canvas.width / 4 + 50, canvas.height / 2, 400, 100, "", startGame, !gameStarted, "#333", "#fa6");
 }}
 
-function drawButton(x, y, width, height, text, onClick, enabled, color) {
+function drawButton(x, y, width, height, text, onClick, enabled, color, textColor) {
     ctx.fillStyle = enabled ? color : "#000"; // different color for disabled button
     ctx.fillRect(x, y, width, height);
 
-    ctx.font = "70px Arial";
-    ctx.fillStyle = "#fa6";
-    ctx.fillText(text, x + 100, y + 70);
+    ctx.font = `${height/1.3}px Arial`;
+    ctx.fillStyle = textColor;
+    ctx.fillText(text, x + width/8, y + height/1.3);
 
     const clickHandler = function (event) {
         const rect = canvas.getBoundingClientRect();
@@ -167,7 +178,8 @@ var velY = 0,
     ratRunToggle = false,
     sound = 0,
     menu = false,
-    pressCounter = 0
+    pressCounter = 0,
+    h = false
 ;
 
 // !movement; sprite
@@ -223,10 +235,11 @@ function update() {
 
     if (pressCounter > 0) {
         pressCounter++
-        if (pressCounter == 60) {pressCounter = 0}
-    }  
+        if (pressCounter == 10) {pressCounter = 0}
+    }  if (!keys.Escape) {h = true}
     console.log(pressCounter)
-    if (keys.Escape && pressCounter == 0) { // idk how ths works
+    if (keys.Escape && pressCounter == 0 && h) { // idk how ths works
+        h = false
         if (!menu) {menu = true; drawMenu(menu)} else {menu = false}
         pressCounter = 1
     }
