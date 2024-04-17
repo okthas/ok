@@ -1,6 +1,6 @@
 // main menu
 
-const canvas = document.getElementById("gameCanvas");
+let canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let gameStarted = false; // Variable to track whether the game has started
@@ -21,14 +21,24 @@ let player = {
     mstamina: 100,
     height: 50, // player.width * sprite.height / sprite.width
     width: 50, // set value
-};    
-player.mxp = 9+player.lvl**2;
-function increaseScreenSize() {return canvas.height*=1.2, canvas.width*=1.2}; function reduceScreenSize() {return canvas.height/=1.2, canvas.width/=1.2}
+}; player.mxp = 9+player.lvl**2;
+
+function redetermineObjects() { // always update when you add more objects
+    return rats = {
+        rat0: createPlatform(1700, canvas.height-20, 30, 20) // x, y
+    },
+    platforms = {
+        platform0: createPlatform(600, canvas.height-50, 150, 50), // x, y, width, height
+        platform1: createPlatform(820, canvas.height-80, 100, 80),
+    }
+}
+function increaseScreenSize() {return canvas.height*=1.2, canvas.width*=1.2, redetermineObjects(), screen()} 
+function reduceScreenSize() {return canvas.height/=1.2, canvas.width/=1.2, redetermineObjects(), screen()}
 function screen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawButton(canvas.width / 5 + 50, 200, 400, 70, "+", increaseScreenSize, true, "#00f", "#fff");
-    drawButton(canvas.width / 5 + 50, 300, 400, 70, "-", reduceScreenSize, true, "#00f", "#fff");
-    ctx.font = "50px Arial";
+    drawButton(canvas.width / 5 + canvas.width/18, canvas.height/2.5, canvas.width/9, canvas.height/7, "+", increaseScreenSize, true, "#00f", "#fff");
+    drawButton(canvas.width / 5 + canvas.width/18, canvas.height/1.8, canvas.width/9, canvas.height/7, "-", reduceScreenSize, true, "#00f", "#fff");
+    ctx.font = `${canvas.width/22.5}px Arial`;
     ctx.fillStyle = "#333";
     ctx.fillText(`height: ${canvas.height}, width: ${canvas.width}`, 30, 150);
 }
@@ -230,6 +240,7 @@ function checkCollision(velX, velY, platform) {
 // !overdone platform bs; animation
 
 function update() {
+    console.log(canvas.height)
         
     // request another frame
 

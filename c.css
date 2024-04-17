@@ -27,8 +27,3 @@ button {
   border: none;
   border-radius: 5px;
 }
-
-.gameCanvas {
-  height: 100%;
-  width: 100%;
-}
