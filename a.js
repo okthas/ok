@@ -2,6 +2,8 @@
 
 let canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+ctx.canvas.width  = window.innerWidth 
+ctx.canvas.height = window.innerHeight
 
 let gameStarted = false; // Variable to track whether the game has started
 
@@ -21,7 +23,7 @@ let player = {
     mstamina: 100,
     height: 50, // player.width * sprite.height / sprite.width
     width: 50, // set value
-}; player.mxp = 9+player.lvl**2;
+}; player.mxp = 9+player.lvl**2
 
 function redetermineObjects() { // always update when you add more objects
     return rats = {
