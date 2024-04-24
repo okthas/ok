@@ -3,9 +3,11 @@
 let canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 ctx.canvas.width  = window.innerWidth 
-ctx.canvas.height = window.innerHeight
+ctx.canvas.height = canvas.width/2.3
 
 let gameStarted = false; // Variable to track whether the game has started
+
+function kill() {return player.hp = 0}
 
 let player = {
     name: "_",
@@ -137,7 +139,11 @@ function renderRat(rat) {
 } 
 
 let rats = {
-    rat0: createPlatform(1700, canvas.height-20, 30, 20) // x, y
+    rat0: createPlatform(1700, canvas.height-20, 30, 20) // x, y, width, height
+}
+
+let checkpoints = {
+    checkpoint0: createPlatform(1400, canvas.height-60, 15, 60)
 }
 
 function chest(player) {
@@ -191,7 +197,8 @@ var velY = 0,
     sound = 0,
     menu = false,
     pressCounter = 0,
-    h = false
+    h = false,
+    counter = 0
 ;
 
 // !movement; sprite
@@ -241,16 +248,13 @@ function checkCollision(velX, velY, platform) {
 
 // !overdone platform bs; animation
 
-function update() {
-    console.log(canvas.height)
-        
+function update() {  
     // request another frame
 
     if (pressCounter > 0) {
         pressCounter++
         if (pressCounter == 10) {pressCounter = 0}
     }  if (!keys.Escape) {h = true}
-    console.log(pressCounter)
     if (keys.Escape && pressCounter == 0 && h) { // idk how ths works
         h = false
         if (!menu) {menu = true; drawMenu(menu)} else {menu = false}
@@ -273,7 +277,7 @@ function update() {
         then = now - (elapsed % fpsInterval);
 
         // Put your drawing code here
-    ctx.clearRect(0, 0, 1080, 1080);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
     
@@ -294,21 +298,36 @@ function update() {
     ctx.fillText(`${player.hp}/${player.mhp}`, 220, 30);
 
     if (player.xp >= player.mxp) {
-        leveling(toggle, player);
-        player.mxp = 9+player.lvl**2;
-    };
-    if (false) { // chest function
-        chest(player)
-    };
+        leveling(toggle, player)
+        player.mxp = 9+player.lvl**2
+    }
     // console.log(player.hp)
     if (player.hp <= 0) {
-        ctx.fillStyle = "#222";
-        ctx.fillRect(0,0,canvas.width,canvas.height)
+        player.y = -500
+        counter++
+        console.log(counter)
         ctx.font = "70px Arial";
         ctx.fillStyle = "#d11";
-        ctx.fillText("Game Over!", canvas.width / 4, canvas.height / 2 - 50);
-        return null;
-    }
+        ctx.fillText("You Died", canvas.width / 3, canvas.height / 3);
+        ctx.font = "40px Arial";
+        ctx.fillStyle = "#000";
+        if (counter < 60) {
+            ctx.fillText("Respawning in... 3", canvas.width / 3, canvas.height / 2);
+        } else if (counter > 60 && counter < 120) {
+            ctx.fillText("Respawning in... 2", canvas.width / 3, canvas.height / 2);
+        } else if (counter > 120 && counter < 180) {
+            ctx.fillText("Respawning in... 1", canvas.width / 3, canvas.height / 2);
+        } else if (counter == 180) {
+            ctx.fillText("Respawning in... 0", canvas.width / 3, canvas.height / 2);
+            counter = 0
+            player.y = canvas.height-player.height
+            distance = checkpoints.checkpoint0.x - player.x // make it change so the player can go to different checkpoints
+            moveSurroundings(distance, platforms["platform"+0])
+            moveSurroundings(distance, platforms["platform"+1])
+            moveSurroundings(distance, rats["rat"+0])
+            moveSurroundings(distance, checkpoints["checkpoint"+0])
+            player.hp = player.mhp
+    }}
     
     if ((keys.ShiftLeft && keys.leftClick) || (keys.ShiftRight && keys.leftClick) || attackCharge > 0){
         keys.Space = false;
@@ -327,9 +346,7 @@ function update() {
         } else {
             ctx.fillStyle = "#ddd";
             ctx.fillRect(player.x-10,player.y-15,attackCharge*1.4,5);
-        }
-        console.log(attackCharge);
-    }
+    }}
     if (!keys.leftClick || (!keys.ShiftRight && !keys.ShiftLeft)) {
         if (attackCharge > 0 && attackCharge < 15) {
             if (player.stamina > 10) {
@@ -399,7 +416,9 @@ function update() {
         velY2 = velY;
 
     for (j=0;j<2;j++) { // bigger 'for' loop for all platforms
-        if (platforms["platform"+j].x < 0 || platforms["platform"+j].x > canvas.width) { console.log(`${platforms["platform"+j]} is out of bounds and will not be rendered`)} // <= idk if this works, i still only have 1 item in platforms
+        if (platforms["platform"+j].x < 0 || platforms["platform"+j].x > canvas.width) {
+            // console.log(`${platforms["platform"+j]} is out of bounds and will not be rendered`)
+        }
         else {while (true) { // if velX or velY causes the player to go into the platform then velX/velY is reduced until it would no longer collide
             if (!checkCollision(velX, velY, platforms["platform"+j])) { break } 
             else { // also only run this if the platform is within the canvas borders (otherwise the game will lag)
@@ -433,6 +452,7 @@ function update() {
         moveSurroundings(velX, platforms["platform"+0])
         moveSurroundings(velX, platforms["platform"+1])
         moveSurroundings(velX, rats["rat"+0])
+        moveSurroundings(velX, checkpoints["checkpoint"+0])
         g = false
         velX *= friction 
     } // for bigger maps, no friction on platforms, when velX on player = 0 then dash cost infinite stamina
