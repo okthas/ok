@@ -469,7 +469,7 @@ function update() {
     // apply some friction to x velocity
     if (g) {player.x += velX; velX *= friction}
 
-    sound = velX * 15 + velY * 45
+    sound = velX**2 + velY * 30
     
     for (i=0;i<2;i++) { // 2 = max number platform +1, we have platform 0 and 1 rn
         if (platforms["platform"+i].x + platforms["platform"+i].width > 0 && platforms["platform"+i].x < canvas.width) {
