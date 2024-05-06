@@ -8,6 +8,12 @@ ctx.canvas.height = canvas.width/2.3
 let gameStarted = false; // Variable to track whether the game has started
 
 function kill() {return player.hp = 0}
+function stats(hp, str, stamina) {
+    return player.hp = hp, player.mhp = hp, player.str = str, player.stamina = stamina, 
+    player.mstamina = stamina
+}
+function position(x, y) {return player.x = x, player.y = y}
+function inventory(item) {player.inv.append(item)}
 
 let player = {
     name: "_",
@@ -47,15 +53,32 @@ function screen() {
     ctx.fillText(`height: ${canvas.height}, width: ${canvas.width}`, canvas.width/30, canvas.height/3.3);
 }
 
+function keybindings() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.font = `${canvas.width/100}px Arial`;
+    ctx.fillStyle = "#333";
+    ctx.fillText(`Jump: Space (hold/press)`, canvas.width/30, canvas.height/8);
+    ctx.fillText(`Attack: LMB (press)`, canvas.width/30, canvas.height/8 + canvas.width/50);
+    ctx.fillText(`Dash: ctrl (press)`, canvas.width/30, canvas.height/8 + 2 * canvas.width/50);
+    ctx.fillText(`Pounce/Charged Attack: Shift + LMB (hold)`, canvas.width/30, canvas.height/8 + 3 * canvas.width/50);
+    ctx.fillText(`Go Left: A (hold)`, canvas.width/30, canvas.height/8 + 4 * canvas.width/50);
+    ctx.fillText(`Go Right: D (hold)`, canvas.width/30, canvas.height/8 + 5 * canvas.width/50);
+}
+
+function gameplay() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    drawButton(canvas.width / 5 + 50, 200, 400, 70, "keybindings", keybindings, true, "#00f", "#fff");
+    canvas.removeEventListener("click"); // , clickHandler
+}
+
 function drawMenu(menu) {
     if (menu) { // pause menu
-        ctx.font = "100px Arial";
+        ctx.font = `${canvas.height/6}px Arial`;
         ctx.fillStyle = "#333";
-        ctx.fillText("settings", canvas.width / 4 + 30, 150);
+        ctx.fillText("settings", canvas.width / 4 + canvas.height/22, 150);
 
-        drawButton(canvas.width / 5 + 50, 200, 400, 70, "screensize", screen, true, "#00f", "#fff");
-        drawButton(canvas.width / 5 + 50, 300, 400, 70, "gameplay", undefined, true, "#00f", "#fff");
-        drawButton(canvas.width / 5 + 50, 400, 400, 70, "???", undefined, true, "#00f", "#fff");
+        drawButton(canvas.width / 5 + canvas.height/15, canvas.height/2.5, canvas.height/1.8, canvas.height/10, "screensize", screen, true, "#00f", "#fff");
+        drawButton(canvas.width / 5 + canvas.height/15, canvas.height/1.8, canvas.height/1.8, canvas.height/10, "gameplay", gameplay, true, "#00f", "#fff");
     } else {
         ctx.fillStyle = "#f0f0f0";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -82,7 +105,10 @@ function drawButton(x, y, width, height, text, onClick, enabled, color, textColo
 
         if (enabled && clickX > x && clickX < x + width && clickY > y && clickY < y + height) {
             onClick();
+            // let els = getEventListeners(canvas).click
+            // els = []
             canvas.removeEventListener("click", clickHandler); // Remove the event listener after the button is clicked
+            // console.log(`removing ${text}`)
         }
     };
 
@@ -301,11 +327,11 @@ function update() {
         leveling(toggle, player)
         player.mxp = 9+player.lvl**2
     }
-    // console.log(player.hp)
+    // console.log(player. hp)
     if (player.hp <= 0) {
         player.y = -500
         counter++
-        console.log(counter)
+        // console.log(counter)
         ctx.font = "70px Arial";
         ctx.fillStyle = "#d11";
         ctx.fillText("You Died", canvas.width / 3, canvas.height / 3);
@@ -321,7 +347,7 @@ function update() {
             ctx.fillText("Respawning in... 0", canvas.width / 3, canvas.height / 2);
             counter = 0
             player.y = canvas.height-player.height
-            distance = checkpoints.checkpoint0.x - player.x // make it change so the player can go to different checkpoints
+            distance = checkpoints.checkpoint0.x - player.x // make it change so the player can go to different checkpoints + add respawn effects (particles)
             moveSurroundings(distance, platforms["platform"+0])
             moveSurroundings(distance, platforms["platform"+1])
             moveSurroundings(distance, rats["rat"+0])
@@ -512,7 +538,7 @@ keys = {
 // key events
 document.body.addEventListener("keydown", function (e) {
     keys[e.code] = true;
-    console.log(e.code)
+    // console.log(e.code)
 });
 document.body.addEventListener("keyup", function (e) {
     keys[e.code] = false;
