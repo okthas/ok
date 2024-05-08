@@ -224,7 +224,8 @@ var velY = 0,
     menu = false,
     pressCounter = 0,
     h = false,
-    counter = 0
+    counter = 0,
+    attack = false
 ;
 
 // !movement; sprite
@@ -354,7 +355,8 @@ function update() {
             moveSurroundings(distance, checkpoints["checkpoint"+0])
             player.hp = player.mhp
     }}
-    
+    if (velX < 3 && velX >= 0 || velX > -3 && velX <= 0) { attack = false }
+    console.log(attack)
     if ((keys.ShiftLeft && keys.leftClick) || (keys.ShiftRight && keys.leftClick) || attackCharge > 0){
         keys.Space = false;
         keys.KeyA = false;
@@ -374,6 +376,7 @@ function update() {
             ctx.fillRect(player.x-10,player.y-15,attackCharge*1.4,5);
     }}
     if (!keys.leftClick || (!keys.ShiftRight && !keys.ShiftLeft)) {
+        if (attackCharge > 0) {attack = true}
         if (attackCharge > 0 && attackCharge < 15) {
             if (player.stamina > 10) {
                 player.stamina-=10
@@ -495,7 +498,7 @@ function update() {
     // apply some friction to x velocity
     if (g) {player.x += velX; velX *= friction}
 
-    sound = velX**4 + velY * 25 // () * stealth mechanic potentially
+    sound = velX**2.3 + velY * 22 // () * stealth mechanic potentially
     
     for (i=0;i<2;i++) { // 2 = max number platform +1, we have platform 0 and 1 rn
         if (platforms["platform"+i].x + platforms["platform"+i].width > 0 && platforms["platform"+i].x < canvas.width) {
@@ -506,7 +509,16 @@ function update() {
             renderRat(rats["rat"+i])
     }}
 
+    // Attack rats (make it any rat eventually)
+
+    if (checkCollision(0, 0, rats.rat0) && attack) { // the rat is killed
+        rats.rat0.y = -500 // makes it just disappear, might hold a death animation instead
+        player.xp += 1
+        // if (Math.random() > 0.3) {player.inv.append(rat item like rat tooth or sum)}
+    }
+
     // rat detection system
+    
     
     if ((player.x > rats.rat0.x - 80 - sound && player.x < rats.rat0.x + 80 + player.width + sound) || ratRunToggle) {
         ratRunToggle = true
