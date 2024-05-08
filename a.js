@@ -495,7 +495,7 @@ function update() {
     // apply some friction to x velocity
     if (g) {player.x += velX; velX *= friction}
 
-    sound = velX**2 + velY * 30
+    sound = velX**4 + velY * 25 // () * stealth mechanic potentially
     
     for (i=0;i<2;i++) { // 2 = max number platform +1, we have platform 0 and 1 rn
         if (platforms["platform"+i].x + platforms["platform"+i].width > 0 && platforms["platform"+i].x < canvas.width) {
@@ -508,7 +508,7 @@ function update() {
 
     // rat detection system
     
-    if ((player.x > rats.rat0.x - 80 - sound && player.x < rats.rat0.x + 80 - sound) || ratRunToggle) {
+    if ((player.x > rats.rat0.x - 80 - sound && player.x < rats.rat0.x + 80 + player.width + sound) || ratRunToggle) {
         ratRunToggle = true
         if (rats.rat0.x > canvas.width) {rats.rat0.y = -500} // if the mouse is out of bounds then it escaped succesfully from the player
         if (player.x < rats.rat0.x) {rats.rat0.x += 6.5}
